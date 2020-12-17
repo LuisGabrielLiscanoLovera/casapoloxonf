@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.min.js" integrity="sha512-DZqqY3PiOvTP9HkjIWgjO6ouCbq+dxqWoJZ/Q+zPYNHmlnI2dQnbJ5bxAHpAMw+LXRm4D72EIRXzvcHQtE8/VQ==" crossorigin="anonymous"></script>
+    <link href="https://nightly.datatables.net/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+
+    
+   
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+
+    <meta charset=utf-8 />
+    <title>Sistema Casa de Polo</title>
+  </head>
+        <style>
+          
+          body {
+  font: 90%/1.45em "Helvetica Neue", HelveticaNeue, Verdana, Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #333;
+  background-color: #fff;
+}
+
+
+td.details-control {
+    background: url('https://www.datatables.net/examples/resources/details_open.png') no-repeat center center;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    background: url('https://www.datatables.net/examples/resources/details_close.png') no-repeat center center;
+}
+
+      </style>
+            
+     
+      
+      
+    <div class="container">
+    <center>
+        <p  class="h1">Sistema de registro Polo</p>
+    
+
+       
+  <form  method="POST" action="/">
+   <div class="form-group  mx-sm-3 mb-2">
+      <input  class="form-contro-sm" type="text" placeholder="op" name="op">
+      <input  class="form-contro-sm" type="text" placeholder="referencia" name="referencia">
+      <input  class="form-contro-sm" type="number" placeholder="color" name="color">
+      <input  class="form-contro-sm" type="number" placeholder="cant_total" name="cant_total">
+      <input type="submit"  class="form-contro-sm  " value="Guardar">
+   </div>
+
+  </form>
+     
+      
+      <div>
+      </div>
+          <table>
+      {% for i in prenda %}
+
+
+       <tr>
+          <td>
+            {{i.op}} 
+          </td>
+          <td>
+            <form method="POST" action="./update" style="display: inline">
+              <input type="hidden" value="{{i.op}}" name="oldtitle">
+              <input type="text" value="{{i.op}}" name="newtitle">
+              <input type="submit" value="Update">
+            </form>
+          </td>
+          <td>
+            <form method="POST" action="./delete" style="display: inline">
+              <input type="hidden" value="{{i.op}}" name="op">
+              <input type="submit" value="Delete">
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+
+
+      
+    </div>
+    
+
+
+
+<table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th></th>
+                <th>OP</th>
+                <th>Referencia</th>
+                <th>Cantidad total</th>
+                <th>Color</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th></th>
+                <th>OP</th>
+                <th>Referencia</th>
+                <th>Cantidad total</th>
+                <th>Color</th>
+                <th>Fecha</th>
+            </tr>
+        </tfoot>
+    </table>
+
+ 
+    <script>
+
+
+function format ( d ) {
+    return'Cantidad terminada: '+d.canTerminada+'= '+d.total+'<br>'+
+        'Fecha Operacion: '+d.feechaOperacion+'<br>'+'Tallas:'+d.tallas+'<br>'+
+        'Cantidad faltante: '+d.canFaltante+'<br>'+
+        'Estatus : Abierta '
+        'The child row can contain any data you wish, including links, images, inner tables etc.';
+        
+}
+
+function getSrc() {   
+          var src = axios.get('/test')
+               .then(function (response) {
+                     return response.data; // the response.data is string of src
+               })
+               .catch(function (response) {
+                    console.log(response);
+               });
+          // doing other something
+          return src;
+   }
+
+$(document).ready(function() {
+    
+   axios.get('/test', {
+     responseType: 'json'
+   })
+     .then(function(res) {
+       if(res.status==200) {
+         console.log(res.data);
+         mensaje.innerHTML = res.data.message;
+       }
+       console.log(res);
+     });
+    var dt = $('#example').DataTable( {
+        "processing": true,
+        "serverSide": true,
+        "ajax": '/test',
+        "columns": [ 
+            {
+                "class":          "details-control",
+                "orderable":      false,
+                "data":           null,
+                "defaultContent": ""
+            },
+            { "data": "op"},
+            { "data": "referencia" },
+            { "data": "cantidadTotal" },
+            { "data": "color" },
+            { "data": "fecha" }
+        ],
+        "order": [[1, 'asc']]
+    } );
+ 
+    // Array to track the ids of the details displayed rows
+    var detailRows = [];
+ 
+    $('#example tbody').on( 'click', 'tr td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = dt.row( tr );
+        var idx = $.inArray( tr.attr('id'), detailRows );
+ 
+        if ( row.child.isShown() ) {
+            tr.removeClass( 'details' );
+            row.child.hide();
+ 
+            // Remove from the 'open' array
+            detailRows.splice( idx, 1 );
+        }
+        else {
+            tr.addClass( 'details' );
+            row.child( format( row.data() ) ).show();
+ 
+            // Add to the 'open' array
+            if ( idx === -1 ) {
+                detailRows.push( tr.attr('id') );
+            }
+        }
+    } );
+ 
+    // On each draw, loop over the `detailRows` array and show any child rows
+    dt.on( 'draw', function () {
+        getSrc();
+        $.each( detailRows, function ( i, id ) {
+            $('#'+id+' td.details-control').trigger( 'click' );
+        } );
+    } );
+} );
+    </script>
+
+
+
+
+  </body>
+</html>
