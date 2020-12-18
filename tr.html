@@ -125,11 +125,10 @@ tr.shown td.details-control {
 
 
 function format ( d ) {
-    return'Cantidad terminada: '+d.canTerminada+'= '+d.total+'<br>'+
+    return'Cantidad terminada: '+d.canTerminada+'= '+d.total+'<br>'+'idprenda='+d.id_pr+'<br>'+
         'Fecha Operacion: '+d.feechaOperacion+'<br>'+'Tallas:'+d.tallas+'<br>'+
         'Cantidad faltante: '+d.canFaltante+'<br>'+
-        'Estatus : Abierta '
-        'The child row can contain any data you wish, including links, images, inner tables etc.';
+        'Estatus : Abierta '+'<table cellpadding=5 cellspacing="0" height border="1"  style="width:100%" ><tbody><tr><th><input class="btn btn-sm btn-block btn-primary" type="button" data-toggle="modal" data-target="#ts'+d.op+'"'+' value="Talla S"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#tm'+d.op+'"'+' value="Talla M"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#tl'+d.op+'"'+'   value="Talla L"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#txl'+d.op+'"'+' value="Talla XL"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#txxl'+d.op+'"'+'  value="Talla XXL"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#txxl'+d.op+'"'+'value="Punto"></th></tr></tbody><tfoot><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></tfoot></table>'+'The child row can contain any data you wish, including links, images, inner tables etc.';
         
 }
 

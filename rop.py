@@ -54,13 +54,17 @@ class Talla(db.Model):
         return "<Title: {}>".format(self.nom_talla)
 
 def ct(id_prenda):
-    operacion = db.engine.execute('select can_terminada, id_talla, fecha from operacion where id_prenda ={};'.format(id_prenda))
+    operacion = db.engine.execute('select id_operacion, can_terminada, id_talla, fecha from operacion where id_prenda ={};'.format(id_prenda))
     sumaTotal= db.engine.execute('select sum(can_terminada) as suma from operacion where id_prenda ={};'.format(id_prenda))
     sct=()
     ct=()
     fec=()
     tll=()
+    idop=()
     for row in operacion:
+        lidop=list(idop)
+        lidop.append(row.id_operacion)
+        idop=tuple(lidop)
         lct=list(ct)
         lct.append(row.can_terminada)
         ct=tuple(lct)
@@ -78,7 +82,7 @@ def ct(id_prenda):
         lsct.append(row.suma)
         sct=tuple(lsct)
         rt=int(row.suma)
-    return {'ct':ct,'tll':tll,'fecp':fec,'sct':sct,'rt':rt}
+    return {'ct':ct,'tll':tll,'fecp':fec,'sct':sct,'rt':rt,'idop':idop}
 
 @app.route('/test',methods=["GET", "POST"])
 
@@ -89,7 +93,8 @@ def gettest():
       "recordsx`x`Filtered": 57}
     datas['data'] = []
     for row in prenda:
-        datas['data'].append({
+        datas['data'].append({"id_pr":"{}".format(int(row.id_prenda)),
+        "id_operacion":ct(row.id_prenda)['idop'],
           "op": "{}".format(row.op),
           "referencia":"{}".format(row.op),
           "color": "{}".format(row.id_color),
