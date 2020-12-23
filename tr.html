@@ -124,14 +124,6 @@ tr.shown td.details-control {
     <script>
 
 
-function format ( d ) {
-    return'Cantidad terminada: '+d.canTerminada+'= '+d.total+'<br>'+'idprenda='+d.id_pr+'<br>'+
-        'Fecha Operacion: '+d.feechaOperacion+'<br>'+'Tallas:'+d.tallas+'<br>'+
-        'Cantidad faltante: '+d.canFaltante+'<br>'+
-        'Estatus : Abierta '+'<table cellpadding=5 cellspacing="0" height border="1"  style="width:100%" ><tbody><tr><th><input class="btn btn-sm btn-block btn-primary" type="button" data-toggle="modal" data-target="#ts'+d.op+'"'+' value="Talla S"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#tm'+d.op+'"'+' value="Talla M"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#tl'+d.op+'"'+'   value="Talla L"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#txl'+d.op+'"'+' value="Talla XL"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#txxl'+d.op+'"'+'  value="Talla XXL"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#txxl'+d.op+'"'+'value="Punto"></th></tr></tbody><tfoot><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></tfoot></table>'+'The child row can contain any data you wish, including links, images, inner tables etc.';
-        
-}
-
 function getSrc() {   
           var src = axios.get('/test')
                .then(function (response) {
@@ -143,6 +135,39 @@ function getSrc() {
           // doing other something
           return src;
    }
+
+function format ( d ) {
+   // alert(typeof(d.canTerminada));
+    //console.log( Object.prototype.toString.call([d.canTerminada]));
+    
+//$.each([d.canTerminada], function(  key, value ) {
+ // alert( key + ": " + value );
+//});
+    return'Cantidad terminada: '+d.canTerminada+'= '+d.total+'<br>'+'idprenda='+d.id_pr+'<br>'+
+        'Fecha Operacion: '+d.feechaOperacion+'<br>'+'Tallas:'+d.tallas+'<br>'+
+        'Cantidad faltante: '+d.canFaltante+'<br>'+
+        'Estatus : Abierta '+
+        '<table cellpadding=5 cellspacing="0" height border="1"  '+
+        'style="width:100%" ><tbody><tr><th><input class="btn btn-sm btn-block btn-primary" type="button" data-toggle="modal" data-target="#ts'+d.op+'"'+' value="Talla S"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#tm'+d.op+'"'+' value="Talla M"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#tl'+d.op+'"'+'   value="Talla L"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#txl'+d.op+'"'+' value="Talla XL"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#txxl'+d.op+'"'+'  value="Talla XXL"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#txxl'+d.op+'"'+'value="Punto"></th></tr></tbody><tfoot><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></tfoot></table>'+'<div>'+
+        '</div>'+'<div class="modal fade" id="ts'+d.op+'" tabindex="-1" role="dialog" aria-labelledby="tss'+d.op+'"'+
+        'aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="tss'+d.op+
+        '">Agregar producto talla S OP:'+d.op+
+        '</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close">'+
+        '<span aria-hidden="true">&times;</span></button></div><div class="modal-body">'+
+        '<form method="POST" action="/">'+
+        '<div class="form-group"><label for="">Cantidad</label>'+
+        '<input type="number" class="form-control" id="tsid'+d.op+'1"'+
+        'name="can_terminada" aria-describedby="number" placeholder="cantidad">'+
+        '<input type="number" hidden="true" id="tsid'+d.op+'2"'+
+        ' name="id_prenda" aria-describedby="number" value="'+d.id_pr+'"'+
+        '><input type="number" hidden="true" id="tsid'+d.op+'3"'+
+        ' name="id_talla" aria-describedby="number" value="1">'+'<small id="tsh'+d.op+'"'+
+        ' class="form-text text-muted">Igresa la cantidad terminada</small></div>'+
+        
+        '</div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button><button class="btn btn-primary" type="submit">Guardar</button></form></div></div></div></div>'
+        'The child row can contain any data you wish, including links, images, inner tables etc.';
+        
+}
 
 $(document).ready(function() {
     
