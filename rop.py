@@ -16,6 +16,7 @@ database_file = "sqlite:///{}".format(os.path.join(project_dir, "polodb.db"))
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_file
 dt=DT.now()
+
 db = SQLAlchemy(app)
 
 class Book(db.Model):
@@ -60,7 +61,9 @@ def ct(id_prenda):
     ct=()
     fec=()
     tll=()
+    tllT=()
     idop=()
+    rt=0
     for row in operacion:
         lidop=list(idop)
         lidop.append(row.id_operacion)
@@ -72,21 +75,30 @@ def ct(id_prenda):
         lfec.append(row.fecha)
         fec=tuple(lfec)
         tallas = db.engine.execute('select nom_talla from talla where id_talla ={};'.format(row.id_talla))
-        #tallas = db.engine.execute('select id_talla from talla where id_talla ={};'.format(row.id_talla))
+        tallasT=db.engine.execute('select  sum(can_terminada) as tallTT from operacion where id_talla ={};'.format(row.id_talla))
         for row in tallas:
             ltll = list(tll)
             ltll.append(row.nom_talla)
             tll = tuple(ltll)
+            for roww in tallasT:
+                ltllT=list(tllT)
+                ltllT.append("<br>"+str(row.nom_talla)+" ="+str(roww.tallTT)+"")
+                tllT = tuple(set(ltllT))
     for row in sumaTotal:
+        if row.suma==None:
+            rt=int(0)
         lsct = list(sct)
         lsct.append(row.suma)
         sct=tuple(lsct)
-        rt=int(row.suma)
-    return {'ct':ct,'tll':tll,'fecp':fec,'sct':sct,'rt':rt,'idop':idop}
+        try:
+            rt=int(row.suma)
+        except Exception as e:
+            pass
+    return {'ct':ct,'tll':tll,'tllT':tllT,'fecp':fec,'sct':sct,'rt':rt,'idop':idop}
 
 @app.route('/test',methods=["GET", "POST"])
 
-def gettest():
+def getData():
     prenda = Prenda.query.all()
     datas = {"draw": 1,
       "recordsTotal": 57,
@@ -102,43 +114,40 @@ def gettest():
           "fecha": "{}".format(row.fecha),
           "canTerminada":ct(row.id_prenda)['ct'],
           "tallas":ct(row.id_prenda)['tll'],
+          "tallaS":ct(row.id_prenda)['tllT'],
           "total":ct(row.id_prenda)['sct'],
           "feechaOperacion": ct(row.id_prenda)['fecp'],
-          "canFaltante": "{}".format(row.cant_total-ct(row.id_prenda)['rt']),  
+          "canFaltante": "{}".format(row.cant_total-ct(row.id_prenda)['rt']),
           "salary": "$162,700"
 })
+            
     print (datas)
     abuelo=jsonify(datas)
     return (abuelo)
-    
-@app.route('/data')
-def get_data():
-    p
-    renda = Prenda.query.all()
-    data = []
-    for row in prenda:
-        data.append([{
-        'id prenda': '{}'.format(row.id_prenda),
-        'op': '{}'.format(row.op),
-        'color':'{}'.format(row.id_color),
-        'cant_total':'{}'.format(row.cant_total)
-        }])
-    return jsonify(data)
 
 @app.route('/', methods=["GET", "POST"])
 def home():
+    #dt=str(dt[:-7])
+    print (type(dt))
     if request.form:
         try:
             prenda = Prenda(op=request.form.get("op"),
-            referencia=request.form.get("referencia"),
+            referencia = request.form.get("referencia"),
             id_color   = request.form.get("color"),
             cant_total = request.form.get("cant_total"),
             fecha = dt)
-            operacion  = Operacion(fecha=dt,id_prenda=request.form.get("id_prenda"),
-            can_terminada=request.form.get("can_terminada"),
+            operacion     = Operacion(fecha=dt,id_prenda=request.form.get("id_prenda"),
+            can_terminada = request.form.get("can_terminada"),
             id_talla=request.form.get("id_talla"))
-            db.session.add(operacion)
-            db.session.add(prenda)
+            
+            if (str(request.form.get("op")))=="None" and (str(request.form.get("referencia")))=="None" and (str(request.form.get("color")))=="None" and (str(request.form.get("cant_total")))=="None":
+                pass
+            else:
+                db.session.add(prenda)
+            if (str(request.form.get("can_terminada")))=="":
+                pass
+            else:
+                db.session.add(operacion)
             db.session.commit()
 
 
@@ -150,24 +159,13 @@ def home():
     operacion = Operacion.query.all()
     resultado = db.engine.execute('select * from operacion;')
 
-    data = []
-    for row in prenda:
-        data.append([{'id prenda': '{}'.format(row.id_prenda),
-    'op': '{}'.format(row.op),
-    'color':'{}'.format(row.id_color),
-    'cant_total':'{}'.format(row.cant_total)}])
-
-    gdt=gettest()
+    gdt=getData()
     return render_template("tr.html",prenda=prenda,dgt=gdt,operacion=operacion,greeting="from python")
-
-    #return render_template("home.html", prenda=prenda)
 
 @app.route('/api/v1.0/mensaje')
 def create_task():
     response = make_response(jsonify({"message": "desde piton y yei", "severity": "danger"}))
     return response
-
-   # return jsonify('Hola mundo desde Flask returnando un yeson')
 
 
 
@@ -199,4 +197,4 @@ def delete():
 
 
 if __name__ == "__main__":#app.run(debug=False)
-    app.run(debug=False,host="127.0.0.1", port=3000)
+    app.run(debug=False,host="127.0.0.1", port=5000)

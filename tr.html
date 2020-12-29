@@ -64,33 +64,7 @@ tr.shown td.details-control {
       
       <div>
       </div>
-          <table>
-      {% for i in prenda %}
-
-
-       <tr>
-          <td>
-            {{i.op}} 
-          </td>
-          <td>
-            <form method="POST" action="./update" style="display: inline">
-              <input type="hidden" value="{{i.op}}" name="oldtitle">
-              <input type="text" value="{{i.op}}" name="newtitle">
-              <input type="submit" value="Update">
-            </form>
-          </td>
-          <td>
-            <form method="POST" action="./delete" style="display: inline">
-              <input type="hidden" value="{{i.op}}" name="op">
-              <input type="submit" value="Delete">
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-    </table>
-
-
-
+ 
       
     </div>
     
@@ -119,9 +93,10 @@ tr.shown td.details-control {
             </tr>
         </tfoot>
     </table>
-
- 
+    
+</div>
     <script>
+
 
 
 function getSrc() {   
@@ -135,7 +110,6 @@ function getSrc() {
           // doing other something
           return src;
    }
-
 function format ( d ) {
    // alert(typeof(d.canTerminada));
     //console.log( Object.prototype.toString.call([d.canTerminada]));
@@ -143,31 +117,34 @@ function format ( d ) {
 //$.each([d.canTerminada], function(  key, value ) {
  // alert( key + ": " + value );
 //});
-    return'Cantidad terminada: '+d.canTerminada+'= '+d.total+'<br>'+'idprenda='+d.id_pr+'<br>'+
-        'Fecha Operacion: '+d.feechaOperacion+'<br>'+'Tallas:'+d.tallas+'<br>'+
+    return'<div class="row"><div class="col-6">'+
+        '<form method="POST" action="/"><div class="form-group"><label class="form-group"> Ingrese operacion</label>'+
+        '<div class="col-md-4 mb-3"><select class="form-control custom-select" name="id_talla"><option selected>Seleccione Talla</option><option value="1">Talla S</option><option value="2">Talla M</option> <option value="3">Talla L</option><option value="4">Talla XL</option><option value="5">Talla XXL</option><option value="6">Punto</option></select></div>'+
+        '<div class="col-md-4 mb-3"><input type="number" class="form-control" id="tsid'+d.op+
+        '1" name="can_terminada" aria-describedby="number" placeholder="cantidad"></div>'+
+        '<input type="number" hidden="true" id="tsid'+d.op+
+        '2" name="id_prenda" aria-describedby="number" value="'+d.id_pr+
+        '"><small id="tsh'+d.op+
+        '" class="form-text text-muted">Igresa la cantidad terminada</small>'+
+        '<div class="col-md-4 mb-3"><button class="btn btn-primary form-group" type="submit" onclick="handleForm()" >Guardar</button></div></div>'+
+        '</form></div>'+
+        '<div class="col-6">'+
+
+
+        'Cantidad terminada: '+d.canTerminada+'='+d.total+'<br>'+
+        
+        '<br>'+'Tallas'+d.tallaS+
+        '<br>'+
         'Cantidad faltante: '+d.canFaltante+'<br>'+
-        'Estatus : Abierta '+
-        '<table cellpadding=5 cellspacing="0" height border="1"  '+
-        'style="width:100%" ><tbody><tr><th><input class="btn btn-sm btn-block btn-primary" type="button" data-toggle="modal" data-target="#ts'+d.op+'"'+' value="Talla S"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#tm'+d.op+'"'+' value="Talla M"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#tl'+d.op+'"'+'   value="Talla L"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#txl'+d.op+'"'+' value="Talla XL"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#txxl'+d.op+'"'+'  value="Talla XXL"></th><th><input class="btn btn-sm btn-block btn-primary" type="button"  data-toggle="modal" data-target="#txxl'+d.op+'"'+'value="Punto"></th></tr></tbody><tfoot><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></tfoot></table>'+'<div>'+
-        '</div>'+'<div class="modal fade" id="ts'+d.op+'" tabindex="-1" role="dialog" aria-labelledby="tss'+d.op+'"'+
-        'aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="tss'+d.op+
-        '">Agregar producto talla S OP:'+d.op+
-        '</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close">'+
-        '<span aria-hidden="true">&times;</span></button></div><div class="modal-body">'+
-        '<form method="POST" action="/">'+
-        '<div class="form-group"><label for="">Cantidad</label>'+
-        '<input type="number" class="form-control" id="tsid'+d.op+'1"'+
-        'name="can_terminada" aria-describedby="number" placeholder="cantidad">'+
-        '<input type="number" hidden="true" id="tsid'+d.op+'2"'+
-        ' name="id_prenda" aria-describedby="number" value="'+d.id_pr+'"'+
-        '><input type="number" hidden="true" id="tsid'+d.op+'3"'+
-        ' name="id_talla" aria-describedby="number" value="1">'+'<small id="tsh'+d.op+'"'+
-        ' class="form-text text-muted">Igresa la cantidad terminada</small></div>'+
-        
-        '</div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button><button class="btn btn-primary" type="submit">Guardar</button></form></div></div></div></div>'
-        'The child row can contain any data you wish, including links, images, inner tables etc.';
-        
+        'Estatus : Abierta </div>';
 }
+/*
+        
+*/
+         
+function handleForm() {
+   console.log("T");
+    };
 
 $(document).ready(function() {
     
@@ -181,6 +158,7 @@ $(document).ready(function() {
        }
        console.log(res);
      });
+  
     var dt = $('#example').DataTable( {
         "processing": true,
         "serverSide": true,
@@ -198,7 +176,7 @@ $(document).ready(function() {
             { "data": "color" },
             { "data": "fecha" }
         ],
-        "order": [[1, 'asc']]
+        "order": [[1, 'dsc']]
     } );
  
     // Array to track the ids of the details displayed rows
