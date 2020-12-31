@@ -26,12 +26,18 @@ class Book(db.Model):
         return "<OP: {}>".format(self.title)
    
 class Prenda(db.Model):
-    id_prenda  =db.Column(db.Integer,    unique=True, nullable=False, primary_key=True)
-    op         =db.Column(db.String(16), unique=True, nullable=False)
-    fecha      =db.Column(db.DateTime)
-    estado     =db.Column(db.Integer)
-    id_color   =db.Column(db.Integer)
-    cant_total =db.Column(db.Integer)
+    id_prenda   =db.Column(db.Integer,    unique=True, nullable=False, primary_key=True)
+    op          =db.Column(db.String(16), unique=True, nullable=False)
+    fecha       =db.Column(db.DateTime)
+    estado      =db.Column(db.Integer)
+    id_color    =db.Column(db.Integer)
+    cant_total  =db.Column(db.Integer)
+    cant_tallaS =db.Column(db.Integer)
+    cant_tallaM =db.Column(db.Integer)
+    cant_tallaL =db.Column(db.Integer)
+    cant_tallaXL =db.Column(db.Integer)
+    cant_tallaXXL=db.Column(db.Integer)
+    nota        =db.Column(db.String(56))
     referencia =db.Column(db.String(16))
     
     def __repr__(self):
@@ -55,7 +61,7 @@ class Talla(db.Model):
         return "<Title: {}>".format(self.nom_talla)
 
 def ct(id_prenda):
-    operacion = db.engine.execute('select id_operacion, can_terminada, id_talla, fecha from operacion where id_prenda ={};'.format(id_prenda))
+    operacion = db.engine.execute('select * from operacion where id_prenda ={};'.format(id_prenda))
     sumaTotal= db.engine.execute('select sum(can_terminada) as suma from operacion where id_prenda ={};'.format(id_prenda))
     sct=()
     ct=()
@@ -75,7 +81,12 @@ def ct(id_prenda):
         lfec.append(row.fecha)
         fec=tuple(lfec)
         tallas = db.engine.execute('select nom_talla from talla where id_talla ={};'.format(row.id_talla))
-        tallasT=db.engine.execute('select  sum(can_terminada) as tallTT from operacion where id_talla ={};'.format(row.id_talla))
+        tallasT=db.engine.execute('select  sum(can_terminada) as tallTT from operacion where id_prenda ={} AND id_talla={};'.format(row.id_prenda,row.id_talla))
+        ts=''
+        tm=''
+        tl=''
+        txl=''
+        txxl=''
         for row in tallas:
             ltll = list(tll)
             ltll.append(row.nom_talla)
@@ -84,6 +95,7 @@ def ct(id_prenda):
                 ltllT=list(tllT)
                 ltllT.append("<br>"+str(row.nom_talla)+" ="+str(roww.tallTT)+"")
                 tllT = tuple(set(ltllT))
+                              
     for row in sumaTotal:
         if row.suma==None:
             rt=int(0)
@@ -105,14 +117,21 @@ def getData():
       "recordsx`x`Filtered": 57}
     datas['data'] = []
     for row in prenda:
-        datas['data'].append({"id_pr":"{}".format(int(row.id_prenda)),
-        "id_operacion":ct(row.id_prenda)['idop'],
+        datas['data'].append({
+          "id_pr":"{}".format(int(row.id_prenda)),
+          "id_operacion":ct(row.id_prenda)['idop'],
           "op": "{}".format(row.op),
-          "referencia":"{}".format(row.op),
+          "referencia":"{}".format(row.referencia),
           "color": "{}".format(row.id_color),
           "cantidadTotal": "{}".format(row.cant_total),
           "fecha": "{}".format(row.fecha),
           "canTerminada":ct(row.id_prenda)['ct'],
+          "tallaSS": "{}".format(row.cant_tallaS),
+          "tallaM": "{}".format(row.cant_tallaM),
+          "tallaL": "{}".format(row.cant_tallaL),
+          "tallaXL": "{}".format(row.cant_tallaXL),
+          "tallaXXL": "{}".format(row.cant_tallaXXL),
+          "nota": "{}".format(row.nota),
           "tallas":ct(row.id_prenda)['tll'],
           "tallaS":ct(row.id_prenda)['tllT'],
           "total":ct(row.id_prenda)['sct'],
@@ -121,7 +140,7 @@ def getData():
           "salary": "$162,700"
 })
             
-    print (datas)
+    #print (datas)
     abuelo=jsonify(datas)
     return (abuelo)
 
@@ -135,11 +154,16 @@ def home():
             referencia = request.form.get("referencia"),
             id_color   = request.form.get("color"),
             cant_total = request.form.get("cant_total"),
+            cant_tallaS = request.form.get("cant_tallaS"),
+            cant_tallaM = request.form.get("cant_tallaM"),
+            cant_tallaL = request.form.get("cant_tallaL"),
+            cant_tallaXL = request.form.get("cant_tallaXL"),
+            cant_tallaXXL = request.form.get("cant_tallaXXL"),
+            nota = request.form.get("nota"),
             fecha = dt)
             operacion     = Operacion(fecha=dt,id_prenda=request.form.get("id_prenda"),
             can_terminada = request.form.get("can_terminada"),
             id_talla=request.form.get("id_talla"))
-            
             if (str(request.form.get("op")))=="None" and (str(request.form.get("referencia")))=="None" and (str(request.form.get("color")))=="None" and (str(request.form.get("cant_total")))=="None":
                 pass
             else:
@@ -176,10 +200,31 @@ def greeting():
 @app.route("/update", methods=["POST"])
 def update():
     try:
-        newtitle = request.form.get("newtitle")
-        oldtitle = request.form.get("oldtitle")
-        book = Book.query.filter_by(title=oldtitle).first()
-        book.title = newtitle
+        opnew=request.form.get("op"),
+        referencia = request.form.get("referencia"),
+        id_color   = request.form.get("color"),
+        cant_total = request.form.get("cant_total"),
+        cant_tallaS = request.form.get("cant_tallaS"),
+        cant_tallaM = request.form.get("cant_tallaM"),
+        cant_tallaL = request.form.get("cant_tallaL"),
+        cant_tallaXL = request.form.get("cant_tallaXL"),
+        cant_tallaXXL = request.form.get("cant_tallaXXL"),
+        nota = request.form.get("nota")
+
+        opold=request.form.get("opold")
+        referenciaold = request.form.get("referenciaold")
+        id_colorold   = request.form.get("colorold")
+        cantidadTotalold = request.form.get("cantidadTotalold")
+        cant_tallaSold = request.form.get("cant_tallaSold")
+        cant_tallaMold = request.form.get("cant_tallaMold")
+        cant_tallaLold = request.form.get("cant_tallaLold")
+        cant_tallaXLold = request.form.get("cant_tallaXLold")
+        cant_tallaXXLold = request.form.get("cant_tallaXXLold")
+        notaold = request.form.get("notaold")
+
+        operacion = Prenda.query.filter_by(op=opold).first()
+        operacion.op = str(opnew)
+        print(opnew,opold)
         db.session.commit()
     except Exception as e:
         print("Couldn't update book title")
@@ -197,4 +242,4 @@ def delete():
 
 
 if __name__ == "__main__":#app.run(debug=False)
-    app.run(debug=False,host="127.0.0.1", port=5000)
+    app.run(debug=False,host="127.0.0.1", port=4000)

@@ -85,10 +85,10 @@ tr.shown td.details-control {
       <input  class="form-contro-sm" type="number" placeholder="Talla L" name="cant_tallaL">
       <input  class="form-contro-sm" type="number" placeholder="Talla XL" name="cant_tallaXL">
       <input  class="form-contro-sm" type="number" placeholder="Talla XXL" name="cant_tallaXXL">
-      <input  class="form-contro-sm" type="text" placeholder="Nota" name="Nota">
+      <input  class="form-contro-sm" type="text" placeholder="Nota" name="nota">
         
       <div class="modal-footer d-flex justify-content-center">
-      <input type="submit"  class="btn btn-primary" value="Guardar">
+      <input type="submit"  class="btn btn-indigo" value="Guardar">
       <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
         
    </div>
@@ -108,12 +108,8 @@ tr.shown td.details-control {
 
   </div>
      
-      
-      <div>
-     
-      
-    </div>
-    
+
+
 
 
 
@@ -163,26 +159,69 @@ function format ( d ) {
 //$.each([d.canTerminada], function(  key, value ) {
  // alert( key + ": " + value );
 //});
-    return'<div class="row"><div class="col-6">'+
-        '<form method="POST" action="/"><div class="form-group"><label class="form-group"> Ingrese operacion</label>'+
-        '<div class="col-md-4 mb-3"><select class="form-control custom-select" name="id_talla"><option selected>Seleccione Talla</option><option value="1">Talla S</option><option value="2">Talla M</option> <option value="3">Talla L</option><option value="4">Talla XL</option><option value="5">Talla XXL</option><option value="6">Punto</option></select></div>'+
-        '<div class="col-md-4 mb-3"><input type="number" class="form-control" id="tsid'+d.op+
+    return'<div class="row"><div class="col-3">'+
+        '<form method="POST" action="/"><div class="form-group"><center><label class="form-group">'+
+        '<h6 class="modal-title w-100 font-weight-bold">Registar tarea</h6></label></center>'+
+        '<div class=" "><select class="form-control-sm custom-select" name="id_talla"><option selected>Seleccione Talla</option><option value="1">Talla S</option><option value="2">Talla M</option> <option value="3">Talla L</option><option value="4">Talla XL</option><option value="5">Talla XXL</option><option value="6">Punto</option></select></div>'+
+        '<div class="  "><input type="number" class="form-control" id="tsid'+d.op+
         '1" name="can_terminada" aria-describedby="number" placeholder="cantidad"></div>'+
         '<input type="number" hidden="true" id="tsid'+d.op+
         '2" name="id_prenda" aria-describedby="number" value="'+d.id_pr+
         '"><small id="tsh'+d.op+
         '" class="form-text text-muted">Igresa la cantidad terminada</small>'+
-        '<div class="col-md-4 mb-3"><button class="btn btn-primary form-group" type="submit" onclick="handleForm()" >Guardar</button></div></div>'+
+        '<div class=""><button class="btn btn-primary form-group" type="submit" onclick="handleForm()" >Guardar</button></div></div>'+
         '</form></div>'+
-        '<div class="col-6">'+
+        '<div class="col-3">'+
+        '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Talla Total</h6></center>'+
+        '<br>'+'Talla S: '+d.tallaSS+
+        '<br>'+'Talla M: '+d.tallaM+
+        '<br>'+'Talla L: '+d.tallaL+
+        '<br>'+'TallaS XL: '+d.tallaXL+
+        '<br>'+'TallaS XXL: '+d.tallaXXL+
 
-
-        'Cantidad terminada: '+d.canTerminada+'='+d.total+'<br>'+
-        
+        '</div>'+
+        '<div class="col-3">'+
+        '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Registrada</h6></center><br>'+
+        'terminada: '+d.canTerminada+'='+d.total+'<br>'+
         '<br>'+'Tallas'+d.tallaS+
         '<br>'+
         'Cantidad faltante: '+d.canFaltante+'<br>'+
-        'Estatus : Abierta </div>';
+        'Nota : '+d.nota+'<br>'+
+        'Estatus : Abierta </div>'+
+
+        '<div class="col-3">'+
+        '<center><h6 class="modal-title w-100 font-weight-bold">Accion</h6><br></center>'+
+        '<div class="container my-4"><p class="font-weight-bold h1"></p><hr><div class="modal fade" id="modalSubscriptionFor" tabindex="-1" role="dialog" aria-labelledby="myModalLabe" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header text-center"><h4 class="modal-title w-100 font-weight-bold">Editar registro Polo</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+        '</div><div class="modal-body mx-6">'+
+        '<form  method="POST" action="./update">'+
+        '<div class="form-group  mx-sm-3 mb-2">'+
+        '<input  class="form-contro-sm" type="text" placeholder="Codigo de operacion (OP)" name="op" value="'+d.op+'">'+
+        '<input type="text" name="opold" hidden="true" value="'+d.op+'">'+
+        '<input  class="form-contro-sm" type="text" placeholder="Referencia" name="referencia" value="'+d.referencia+'">'+
+        '<input type="text" name="referenciaold" hidden="true" value="'+d.referncia+'">'+
+        '<input  class="form-contro-sm" type="number" placeholder="Color" name="color" value="'+d.color+'">'+
+        '<input type="number" name="colorold" hidden="true" value="'+d.color+'">'+
+        '<input  class="form-contro-sm" type="number" placeholder="Cantidad Total" name="cant_total" value="'+d.cantidadTotal+'">'+
+        '<input type="number" name="cantidadTotalold" hidden="true" value="'+d.cantidadTotal+'">'+
+        '<input  class="form-contro-sm" type="number" placeholder="Talla S" name="cant_tallaS" value="'+d.tallaSS+'">'+
+        '<input type="number" name="cant_tallaSold" hidden="true" value="'+d.tallaSS+'">'+
+        '<input  class="form-contro-sm" type="number" placeholder="Talla M" name="cant_tallaM" value="'+d.tallaM+'">'+
+        '<input type="number" name="cant_tallaMold" hidden="true" value="'+d.tallaM+'">'+
+        '<input  class="form-contro-sm" type="number" placeholder="Talla L" name="cant_tallaL" value="'+d.tallaL+'">'+
+        '<input type="number" name="cant_tallaLold" hidden="true" value="'+d.tallaL+'">'+
+        '<input  class="form-contro-sm" type="number" placeholder="Talla XL" name="cant_tallaXL" value="'+d.tallaXL+'">'+
+        '<input type="number" name="cant_tallaXLold" hidden="true" value="'+d.tallaXL+'">'+
+        '<input  class="form-contro-sm" type="number" placeholder="Talla XXL" name="cant_tallaXXL" value="'+d.tallaXXL+'">'+
+        '<input type="number" name="cant_tallaXXLold" hidden="true" value="'+d.tallaXXL+'">'+
+        '<input  class="form-contro-sm" type="text" placeholder="Nota" name="nota" value="'+d.nota+'">'+
+        '<input type="number" name="notaold" hidden="true" value="'+d.nota+'">'+
+        '<div class="modal-footer d-flex justify-content-center">'+
+        '<input type="submit"  class="btn btn-indigo" value="Guardar">'+
+        '<button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>'+
+        '</div></form></div></div></div></div></div></div><div class="text-center">'+
+        '<a href="" class="btn btn-blue btn-rounded mb-2" data-toggle="modal" data-target="#modalSubscriptionFor"><i class="far fa-edit" aria-hidden="true"></i></a>'+
+        '<a href="" class="btn btn-danger btn-rounded mb-2" "> <i class="far fa-trash-alt" aria-hidden="true"></i></a></div></div>'+
+        '</div>';
 }
 /*
         
