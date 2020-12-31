@@ -19,12 +19,6 @@ dt=DT.now()
 
 db = SQLAlchemy(app)
 
-class Book(db.Model):
-    title = db.Column(db.String(2), unique=True, nullable=False, primary_key=True)
-
-    def __repr__(self):
-        return "<OP: {}>".format(self.title)
-   
 class Prenda(db.Model):
     id_prenda   =db.Column(db.Integer,    unique=True, nullable=False, primary_key=True)
     op          =db.Column(db.String(16), unique=True, nullable=False)
@@ -108,7 +102,7 @@ def ct(id_prenda):
             pass
     return {'ct':ct,'tll':tll,'tllT':tllT,'fecp':fec,'sct':sct,'rt':rt,'idop':idop}
 
-@app.route('/test',methods=["GET", "POST"])
+@app.route('/test',methods=["GET"])
 
 def getData():
     prenda = Prenda.query.all()
@@ -186,16 +180,6 @@ def home():
     gdt=getData()
     return render_template("tr.html",prenda=prenda,dgt=gdt,operacion=operacion,greeting="from python")
 
-@app.route('/api/v1.0/mensaje')
-def create_task():
-    response = make_response(jsonify({"message": "desde piton y yei", "severity": "danger"}))
-    return response
-
-
-
-@app.route("/greeting")
-def greeting():
-    return {"greeting": "Hello from Flask!"}
 
 @app.route("/update", methods=["POST"])
 def update():

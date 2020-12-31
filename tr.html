@@ -3,7 +3,7 @@
   <head>
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.min.js" integrity="sha512-DZqqY3PiOvTP9HkjIWgjO6ouCbq+dxqWoJZ/Q+zPYNHmlnI2dQnbJ5bxAHpAMw+LXRm4D72EIRXzvcHQtE8/VQ==" crossorigin="anonymous"></script>
-<link href="https://nightly.datatables.net/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+<link href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
 <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
 
 
@@ -39,7 +39,18 @@
     <title>Sistema Casa de Polo</title>
   </head>
         <style>
-          
+          table.dataTable thead .sorting:after,
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_asc_disabled:after,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_desc_disabled:after,
+table.dataTable thead .sorting_desc_disabled:before {
+  bottom: .5em;
+}
           body {
   font: 90%/1.45em "Helvetica Neue", HelveticaNeue, Verdana, Arial, Helvetica, sans-serif;
   margin: 0;
@@ -113,7 +124,7 @@ tr.shown td.details-control {
 
 
 
-<table id="example" class="display" style="width:100%">
+<table id="example" class="table table-striped table-sm"  cellspacing="0" width="100%">
         <thead>
             <tr>
                 <th></th>
@@ -140,18 +151,6 @@ tr.shown td.details-control {
     <script>
 
 
-
-function getSrc() {   
-          var src = axios.get('/test')
-               .then(function (response) {
-                     return response.data; // the response.data is string of src
-               })
-               .catch(function (response) {
-                    console.log(response);
-               });
-          // doing other something
-          return src;
-   }
 function format ( d ) {
    // alert(typeof(d.canTerminada));
     //console.log( Object.prototype.toString.call([d.canTerminada]));
@@ -237,22 +236,14 @@ function handleForm() {
     };
 
 $(document).ready(function() {
-    
-   axios.get('/test', {
-     responseType: 'json'
-   })
-     .then(function(res) {
-       if(res.status==200) {
-         console.log(res.data);
-         mensaje.innerHTML = res.data.message;
-       }
-       console.log(res);
-     });
   
     var dt = $('#example').DataTable( {
-        "processing": true,
-        "serverSide": true,
-        "ajax": '/test',
+        "processing": false,
+        "serverSide": false,
+         "ajax": {
+            "url": "/test",
+            "type": "GET"
+        },
         "columns": [ 
             {
                 "class":          "details-control",
@@ -266,7 +257,7 @@ $(document).ready(function() {
             { "data": "color" },
             { "data": "fecha" }
         ],
-        "order": [[1, 'dsc']]
+        "order": [[1, 'asc']]
     } );
  
     // Array to track the ids of the details displayed rows
@@ -297,7 +288,7 @@ $(document).ready(function() {
  
     // On each draw, loop over the `detailRows` array and show any child rows
     dt.on( 'draw', function () {
-        getSrc();
+
         $.each( detailRows, function ( i, id ) {
             $('#'+id+' td.details-control').trigger( 'click' );
         } );
