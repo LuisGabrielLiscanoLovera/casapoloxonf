@@ -201,15 +201,15 @@ def greeting():
 def update():
     try:
         opnew=request.form.get("op"),
-        referencia = request.form.get("referencia"),
-        id_color   = request.form.get("color"),
-        cant_total = request.form.get("cant_total"),
-        cant_tallaS = request.form.get("cant_tallaS"),
-        cant_tallaM = request.form.get("cant_tallaM"),
-        cant_tallaL = request.form.get("cant_tallaL"),
-        cant_tallaXL = request.form.get("cant_tallaXL"),
-        cant_tallaXXL = request.form.get("cant_tallaXXL"),
-        nota = request.form.get("nota")
+        referencianew = request.form.get("referencia"),
+        id_colornew   = request.form.get("color"),
+        cant_totalnew = request.form.get("cant_total"),
+        cant_tallaSnew = request.form.get("cant_tallaS"),
+        cant_tallaMnew = request.form.get("cant_tallaM"),
+        cant_tallaLnew = request.form.get("cant_tallaL"),
+        cant_tallaXLnew = request.form.get("cant_tallaXL"),
+        cant_tallaXXLnew = request.form.get("cant_tallaXXL"),
+        notanew = request.form.get("nota")
 
         opold=request.form.get("opold")
         referenciaold = request.form.get("referenciaold")
@@ -223,8 +223,38 @@ def update():
         notaold = request.form.get("notaold")
 
         operacion = Prenda.query.filter_by(op=opold).first()
-        operacion.op = str(opnew)
-        print(opnew,opold)
+        operacion.op = str(opnew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
+
+        referencia = Prenda.query.filter_by(referencia=referenciaold).first()
+        operacion.referencia = str(referencianew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
+
+        color = Prenda.query.filter_by(id_color=id_colorold).first()
+        color.id_color = str(id_colornew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
+
+        canTotal = Prenda.query.filter_by(cant_total=cantidadTotalold).first()
+        canTotal.cant_total = str(cant_totalnew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
+        
+
+        canTallaS = Prenda.query.filter_by(cant_tallaS=cant_tallaSold).first()
+        canTallaS.cant_tallaS = str(cant_tallaSnew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
+
+        canTallaM = Prenda.query.filter_by(cant_tallaM=cant_tallaMold).first()
+        canTallaM.cant_tallaM = str(cant_tallaMnew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
+
+        canTallaL = Prenda.query.filter_by(cant_tallaL=cant_tallaLold).first()
+        canTallaL.cant_tallaL = str(cant_tallaLnew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
+
+        canTallaXL = Prenda.query.filter_by(cant_tallaXL=cant_tallaXLold).first()
+        canTallaXL.cant_tallaXL = str(cant_tallaXLnew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
+
+        canTallaXXL = Prenda.query.filter_by(cant_tallaXXL=cant_tallaXXLold).first()
+        canTallaXXL.cant_tallaXXL = str(cant_tallaXXLnew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
+
+        #notas = Prenda.query.filter_by(nota=notaold).first()
+        #for row in notas:
+         #   print(row.nota)
+        #notas.nota = str(notanew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
+        #print(str(notaold,notanew))
         db.session.commit()
     except Exception as e:
         print("Couldn't update book title")
@@ -233,8 +263,11 @@ def update():
 
 @app.route("/delete", methods=["POST"])
 def delete():
-    op = request.form.get("op")
-    prenda = Prenda.query.filter_by(op=op).first()
+    idpre = request.form.get("id_pren")
+    oper  = request.form.get("id_operacion")
+    prenda = Prenda.query.filter_by(id_prenda=idpre).first()
+    operacion = Operacion.query.filter_by(id_operacion=oper).first()
+    #db.session.delete(operacion)
     db.session.delete(prenda)
     db.session.commit()
     return redirect("/")

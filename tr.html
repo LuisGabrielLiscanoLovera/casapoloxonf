@@ -213,14 +213,19 @@ function format ( d ) {
         '<input type="number" name="cant_tallaXLold" hidden="true" value="'+d.tallaXL+'">'+
         '<input  class="form-contro-sm" type="number" placeholder="Talla XXL" name="cant_tallaXXL" value="'+d.tallaXXL+'">'+
         '<input type="number" name="cant_tallaXXLold" hidden="true" value="'+d.tallaXXL+'">'+
-        '<input  class="form-contro-sm" type="text" placeholder="Nota" name="nota" value="'+d.nota+'">'+
+        '<input  class="form-contro-sm" disabled type="text" placeholder="Nota" name="nota" value="'+d.nota+'">'+
         '<input type="number" name="notaold" hidden="true" value="'+d.nota+'">'+
         '<div class="modal-footer d-flex justify-content-center">'+
         '<input type="submit"  class="btn btn-indigo" value="Guardar">'+
         '<button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>'+
         '</div></form></div></div></div></div></div></div><div class="text-center">'+
         '<a href="" class="btn btn-blue btn-rounded mb-2" data-toggle="modal" data-target="#modalSubscriptionFor"><i class="far fa-edit" aria-hidden="true"></i></a>'+
-        '<a href="" class="btn btn-danger btn-rounded mb-2" "> <i class="far fa-trash-alt" aria-hidden="true"></i></a></div></div>'+
+
+        '<form method="POST" action="./delete" style="display: inline">'+
+        '<input type="hidden" value="'+d.id_pr+'" name="id_pren">'+
+        '<input type="hidden" value="'+d.id_operacion+'" name="id_op">'+
+        '<button type ="submit" href="" class="btn btn-danger btn-rounded mb-2" ><i class="far fa-trash-alt" aria-hidden="true"></i></button>'+
+        '</form></div></div>'+
         '</div>';
 }
 /*
