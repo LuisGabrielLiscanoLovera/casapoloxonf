@@ -1,13 +1,14 @@
 import os
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, make_response,url_for
 from flask import redirect
 from flask import render_template
 from flask import request
 import json
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime as DT
-from os import remove as rm
-
+from datetime import datetime as DT,timedelta
+from random import choice
+from flask_cors import CORS, cross_origin
+from flask import  flash, session, abort
 
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
@@ -15,9 +16,34 @@ database_file = "sqlite:///{}".format(os.path.join(project_dir, "polodb.db"))
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_file
-dt=DT.now()
+app.config['SECRET_KEY'] = os.urandom(16)
+app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=1)
 
+
+dt=DT.now()
 db = SQLAlchemy(app)
+
+
+
+
+
+def gerar_token(tamanho):
+    chars = "0123456789ABCDEFGHIJKLMNOPQRSTUWVXYZ"
+
+    password = ""
+
+    for char in range(tamanho):
+        password += choice(chars)
+
+    return password
+
+class Users(db.Model):
+    id_users =db.Column(db.Integer,    unique=True, nullable=False, primary_key=True)
+    username        =db.Column(db.String(56),nullable=False)
+    email           =db.Column(db.String(56),nullable=False)
+    password        =db.Column(db.String(56),nullable=False)
+    contact         =db.Column(db.String(56),nullable=False)
+db.create_all()
 
 class Prenda(db.Model):
     id_prenda   =db.Column(db.Integer,    unique=True, nullable=False, primary_key=True)
@@ -55,8 +81,9 @@ class Talla(db.Model):
         return "<Title: {}>".format(self.nom_talla)
 
 def ct(id_prenda):
-    operacion = db.engine.execute('select * from operacion where id_prenda ={};'.format(id_prenda))
-    sumaTotal= db.engine.execute('select sum(can_terminada) as suma from operacion where id_prenda ={};'.format(id_prenda))
+    operacion = db.engine.execute('select * from operacion where id_prenda ={};'.format(int(id_prenda)))
+    sumaTotal = db.engine.execute('select sum(can_terminada) as suma from operacion where id_prenda ={};'.format(id_prenda))
+    
     sct=()
     ct=()
     fec=()
@@ -102,7 +129,61 @@ def ct(id_prenda):
             pass
     return {'ct':ct,'tll':tll,'tllT':tllT,'fecp':fec,'sct':sct,'rt':rt,'idop':idop}
 
-@app.route('/test',methods=["GET"])
+
+# ======================
+#   Allow Cross Origin
+# ======================
+@app.after_request # blueprint can also be app~~
+def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
+
+#@app.route('/signin/', methods=['GET', 'POST'])
+@app.route("/login", methods=["POST"])
+def login():
+    POST_USERNAME = str(request.form['username'])
+    POST_PASSWORD = str(request.form['password'])
+
+    registered_user = Users.query.filter_by(username=POST_USERNAME, password=POST_PASSWORD).first()
+
+    if not registered_user is None:
+        session['logged_in'] = True
+    else:
+        flash('wrong password!')
+    return home()
+
+# Signup page
+@app.route('/signup/', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+        contact = request.form['contact']
+        inserUser= Users(username=username,email=email,password=password,contact=contact)
+        db.session.add(inserUser)
+        db.session.commit()
+        return redirect(url_for('login'))
+    else:
+        return render_template('index.html')
+
+# api json 
+@app.route('/sum', methods=['GET','POST'])
+def sum():
+    sum = 0
+    a = int(request.args.get('a'))
+    b = int(request.args.get('b'))
+    sum = a+b
+    return jsonify(sum)
+
+
+
+
+
+@app.route('/data',methods=["GET"])
 
 def getData():
     prenda = Prenda.query.all()
@@ -113,7 +194,7 @@ def getData():
     for row in prenda:
         datas['data'].append({
           "id_pr":"{}".format(int(row.id_prenda)),
-          "id_operacion":ct(row.id_prenda)['idop'],
+          "id_operacion":ct(int(row.id_prenda))['idop'],
           "op": "{}".format(row.op),
           "referencia":"{}".format(row.referencia),
           "color": "{}".format(row.id_color),
@@ -137,9 +218,20 @@ def getData():
     #print (datas)
     abuelo=jsonify(datas)
     return (abuelo)
-
-@app.route('/', methods=["GET", "POST"])
+@app.route('/')
 def home():
+    if not session.get("logged_in"):
+        return render_template("login.html")
+    else:
+        return redirect(url_for('registro'))#"Hello, Boss! <a href=\"/logout\"> Logout"
+    return render_template('login.html')
+
+
+
+
+    
+@app.route('/registro', methods=["GET", "POST"])
+def registro():
     #dt=str(dt[:-7])
     print (type(dt))
     if request.form:
@@ -173,12 +265,10 @@ def home():
             print("Failed to add prenda")
             print(e)
     prenda    = Prenda.query.all()
-    query     = Prenda.query.filter_by(id_prenda = '1')
     operacion = Operacion.query.all()
-    resultado = db.engine.execute('select * from operacion;')
-
+    
     gdt=getData()
-    return render_template("tr.html",prenda=prenda,dgt=gdt,operacion=operacion,greeting="from python")
+    return render_template("tr.html",prenda=prenda,dgt=gdt,operacion=operacion)
 
 
 @app.route("/update", methods=["POST"])
@@ -256,7 +346,13 @@ def delete():
     db.session.commit()
     return redirect("/")
 
-
-
-if __name__ == "__main__":#app.run(debug=False)
-    app.run(debug=False,host="127.0.0.1", port=4000)
+@app.route("/logout")
+def logout():
+    session['logged_in'] = False
+    return home()
+if __name__ == '__main__':
+    app.debug = True
+    app.secret_key =gerar_token(8)
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.run(host='127.0.0.1', port=3000)
