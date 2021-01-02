@@ -170,18 +170,6 @@ def signup():
     else:
         return render_template('index.html')
 
-# api json 
-@app.route('/sum', methods=['GET','POST'])
-def sum():
-    sum = 0
-    a = int(request.args.get('a'))
-    b = int(request.args.get('b'))
-    sum = a+b
-    return jsonify(sum)
-
-
-
-
 
 @app.route('/data',methods=["GET"])
 
@@ -232,43 +220,43 @@ def home():
     
 @app.route('/registro', methods=["GET", "POST"])
 def registro():
-    #dt=str(dt[:-7])
-    print (type(dt))
-    if request.form:
-        try:
-            prenda = Prenda(op=request.form.get("op"),
-            referencia = request.form.get("referencia"),
-            id_color   = request.form.get("color"),
-            cant_total = request.form.get("cant_total"),
-            cant_tallaS = request.form.get("cant_tallaS"),
-            cant_tallaM = request.form.get("cant_tallaM"),
-            cant_tallaL = request.form.get("cant_tallaL"),
-            cant_tallaXL = request.form.get("cant_tallaXL"),
-            cant_tallaXXL = request.form.get("cant_tallaXXL"),
-            nota = request.form.get("nota"),
-            fecha = dt)
-            operacion     = Operacion(fecha=dt,id_prenda=request.form.get("id_prenda"),
-            can_terminada = request.form.get("can_terminada"),
-            id_talla=request.form.get("id_talla"))
-            if (str(request.form.get("op")))=="None" and (str(request.form.get("referencia")))=="None" and (str(request.form.get("color")))=="None" and (str(request.form.get("cant_total")))=="None":
-                pass
-            else:
-                db.session.add(prenda)
-            if (str(request.form.get("can_terminada")))=="":
-                pass
-            else:
-                db.session.add(operacion)
-            db.session.commit()
+    if not session.get("logged_in"):
+        return render_template("login.html")
+    else:#dt=str(dt[:-7])))
+        if request.form:
+            try:
+                prenda = Prenda(op=request.form.get("op"),
+                referencia = request.form.get("referencia"),
+                id_color   = request.form.get("color"),
+                cant_total = request.form.get("cant_total"),
+                cant_tallaS = request.form.get("cant_tallaS"),
+                cant_tallaM = request.form.get("cant_tallaM"),
+                cant_tallaL = request.form.get("cant_tallaL"),
+                cant_tallaXL = request.form.get("cant_tallaXL"),
+                cant_tallaXXL = request.form.get("cant_tallaXXL"),
+                nota = request.form.get("nota"),
+                fecha = dt)
+                operacion     = Operacion(fecha=dt,id_prenda=request.form.get("id_prenda"),
+                can_terminada = request.form.get("can_terminada"),
+                id_talla=request.form.get("id_talla"))
+                if (str(request.form.get("op")))=="None" and (str(request.form.get("referencia")))=="None" and (str(request.form.get("color")))=="None" and (str(request.form.get("cant_total")))=="None" and (str(request.form.get("cant_tallaS")))=="None" and (str(request.form.get("cant_tallaM")))=="None" and (str(request.form.get("cant_tallaL")))=="None" and (str(request.form.get("cant_tallaXL")))=="None" and (str(request.form.get("cant_tallaXXL")))=="None" and (str(request.form.get("cant_nota")))=="None" and (str(request.form.get("estado")))=="None":
+                    pass
+                if (str(request.form.get("op")))=="None" and (str(request.form.get("referencia")))=="None" and (str(request.form.get("color")))=="None" and (str(request.form.get("cant_total")))=="None":
+                    pass
+                else:
+                    db.session.add(prenda)
+                if (str(request.form.get("can_terminada")))=="":
+                    pass
+                else:
+                    db.session.add(operacion)
+                db.session.commit()
 
-
-        except Exception as e:
-            print("Failed to add prenda")
-            print(e)
-    prenda    = Prenda.query.all()
-    operacion = Operacion.query.all()
-    
+            except Exception as e:
+                print("Failed to add prenda")
+                print(e)
+  
     gdt=getData()
-    return render_template("tr.html",prenda=prenda,dgt=gdt,operacion=operacion)
+    return render_template("tr.html",dgt=gdt)
 
 
 @app.route("/update", methods=["POST"])
@@ -333,18 +321,19 @@ def update():
     except Exception as e:
         print("Couldn't update book title")
         print(e)
-    return redirect("/")
+    return redirect("/registro")
 
 @app.route("/delete", methods=["POST"])
 def delete():
     idpre = request.form.get("id_pren")
-    oper  = request.form.get("id_operacion")
     prenda = Prenda.query.filter_by(id_prenda=idpre).first()
-    operacion = Operacion.query.filter_by(id_operacion=oper).first()
-    #db.session.delete(operacion)
+    deloperacion=db.engine.execute('delete from operacion where id_prenda ={};'.format(idpre))
+
+    #operacion = Operacion.query.filter_by(id_prenda=idpre)
+  #  db.session.delete(operacion)
     db.session.delete(prenda)
     db.session.commit()
-    return redirect("/")
+    return redirect("/registro")
 
 @app.route("/logout")
 def logout():
