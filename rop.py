@@ -17,7 +17,7 @@ database_file = "sqlite:///{}".format(os.path.join(project_dir, "polodb.db"))
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_file
 app.config['SECRET_KEY'] = os.urandom(16)
-app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=1)
+app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=120)
 
 
 dt=DT.now()
@@ -133,12 +133,6 @@ def ct(id_prenda):
 # ======================
 #   Allow Cross Origin
 # ======================
-@app.after_request # blueprint can also be app~~
-def after_request(response):
-    header = response.headers
-    header['Access-Control-Allow-Origin'] = '*'
-    return response
-
 
 
 #@app.route('/signin/', methods=['GET', 'POST'])
@@ -172,16 +166,18 @@ def signup():
 
 
 @app.route('/data',methods=["GET"])
-
 def getData():
-    prenda = Prenda.query.all()
-    datas = {"draw": 1,
-      "recordsTotal": 57,
-      "recordsx`x`Filtered": 57}
-    datas['data'] = []
-    for row in prenda:
-        datas['data'].append({
-          "id_pr":"{}".format(int(row.id_prenda)),
+    if not session.get("logged_in"):
+        return render_template("login.html")
+    else:
+        prenda = Prenda.query.all()
+        datas = {"draw": 1,
+          "recordsTotal": 57,
+          "recordsx`x`Filtered": 57}
+        datas['data'] = []
+        for row in prenda:
+            datas['data'].append({
+            "id_pr":"{}".format(int(row.id_prenda)),
           "id_operacion":ct(int(row.id_prenda))['idop'],
           "op": "{}".format(row.op),
           "referencia":"{}".format(row.referencia),
@@ -204,7 +200,7 @@ def getData():
 })
             
     #print (datas)
-    abuelo=jsonify(datas)
+        abuelo=jsonify(datas)
     return (abuelo)
 @app.route('/')
 def home():
@@ -221,6 +217,7 @@ def home():
 @app.route('/registro', methods=["GET", "POST"])
 def registro():
     if not session.get("logged_in"):
+        print(str(dt)+" estoy aqui ")
         return render_template("login.html")
     else:#dt=str(dt[:-7])))
         if request.form:
@@ -325,14 +322,17 @@ def update():
 
 @app.route("/delete", methods=["POST"])
 def delete():
-    idpre = request.form.get("id_pren")
-    prenda = Prenda.query.filter_by(id_prenda=idpre).first()
-    deloperacion=db.engine.execute('delete from operacion where id_prenda ={};'.format(idpre))
+    if not session.get("logged_in"):
+        return render_template("login.html")
+    else:
+        idpre = request.form.get("id_pren")
+        prenda = Prenda.query.filter_by(id_prenda=idpre).first()
+        deloperacion=db.engine.execute('delete from operacion where id_prenda ={};'.format(idpre))
 
     #operacion = Operacion.query.filter_by(id_prenda=idpre)
   #  db.session.delete(operacion)
-    db.session.delete(prenda)
-    db.session.commit()
+        db.session.delete(prenda)
+        db.session.commit()
     return redirect("/registro")
 
 @app.route("/logout")
@@ -344,4 +344,4 @@ if __name__ == '__main__':
     app.secret_key =gerar_token(8)
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.run(host='127.0.0.1', port=3000)
+    app.run(host='127.0.0.1', port=5000)
