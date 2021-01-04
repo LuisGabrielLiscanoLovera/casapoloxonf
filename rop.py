@@ -43,13 +43,13 @@ class Users(db.Model):
     email           =db.Column(db.String(56),nullable=False)
     password        =db.Column(db.String(56),nullable=False)
     contact         =db.Column(db.String(56),nullable=False)
-db.create_all()
+
 
 class Prenda(db.Model):
     id_prenda   =db.Column(db.Integer,    unique=True, nullable=False, primary_key=True)
     op          =db.Column(db.String(16), unique=True, nullable=False)
     fecha       =db.Column(db.DateTime)
-    estado      =db.Column(db.Integer)
+    estado      =db.Column(db.String(9))
     id_color    =db.Column(db.Integer)
     cant_total  =db.Column(db.Integer)
     cant_tallaS =db.Column(db.Integer)
@@ -79,7 +79,7 @@ class Talla(db.Model):
     nom_talla= db.Column(db.String(2))
     def __repr__(self):
         return "<Title: {}>".format(self.nom_talla)
-
+db.create_all()
 def ct(id_prenda):
     operacion = db.engine.execute('select * from operacion where id_prenda ={};'.format(int(id_prenda)))
     sumaTotal = db.engine.execute('select sum(can_terminada) as suma from operacion where id_prenda ={};'.format(id_prenda))
@@ -175,9 +175,15 @@ def getData():
           "recordsTotal": 57,
           "recordsx`x`Filtered": 57}
         datas['data'] = []
+        estado=""
         for row in prenda:
+            x=row.cant_total-ct(row.id_prenda)['rt']
+            if x <= 0:
+                estado='<h6 class="text-danger">Cerrado</h6>'
+            else:
+                estado='<h6 class="text-success">Abierto</h6>'
             datas['data'].append({
-            "id_pr":"{}".format(int(row.id_prenda)),
+          "id_pr":"{}".format(int(row.id_prenda)),
           "id_operacion":ct(int(row.id_prenda))['idop'],
           "op": "{}".format(row.op),
           "referencia":"{}".format(row.referencia),
@@ -196,7 +202,7 @@ def getData():
           "total":ct(row.id_prenda)['sct'],
           "feechaOperacion": ct(row.id_prenda)['fecp'],
           "canFaltante": "{}".format(row.cant_total-ct(row.id_prenda)['rt']),
-          "salary": "$162,700"
+          "estado": estado,
 })
             
     #print (datas)
@@ -232,6 +238,7 @@ def registro():
                 cant_tallaXL = request.form.get("cant_tallaXL"),
                 cant_tallaXXL = request.form.get("cant_tallaXXL"),
                 nota = request.form.get("nota"),
+                estado=request.form.get("estado"),
                 fecha = dt)
                 operacion     = Operacion(fecha=dt,id_prenda=request.form.get("id_prenda"),
                 can_terminada = request.form.get("can_terminada"),

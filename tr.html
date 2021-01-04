@@ -85,6 +85,7 @@
 
 
 body {
+    background-color: #3498DB;
   font-family: 'lato', sans-serif;
 }
 .container {
@@ -341,7 +342,7 @@ tr.shown td.details-control {
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Sistema de registro Polo</h4>
+        <h4 class="modal-title w-100 font-weight-bold text-muted mb-5">Sistema de registro Polo</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -361,7 +362,7 @@ tr.shown td.details-control {
       <input  class="form-contro-md" type="number" placeholder="Talla XL" name="cant_tallaXL">
       <input  class="form-contro-md" type="number" placeholder="Talla XXL" name="cant_tallaXXL">
       <input  class="form-contro-md" type="text" placeholder="Nota" name="nota">
-        
+      <input type="hidden" value="Abierta" name="estado">        
       <div class="modal-footer d-flex justify-content-center">
       <input type="submit"  class="btn btn-outline-success "  value="Guardar" onclick="handleForm()">
       <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cerrar</button>
@@ -418,7 +419,7 @@ function format ( d ) {
 //});
     return'<div class="row"><div class="col-3">'+
         '<form method="POST" action="/registro"><div class="form-group"><center><label class="form-group">'+
-        '<h6 class="modal-title w-100 font-weight-bold">Registar Tarea</h6></label></center>'+
+        '<h6 class="modal-title w-100 font-weight-bold ">Registar Tarea</h6></label></center>'+
         '<div class=" "><select class="form-control-sm custom-select" name="id_talla"><option selected>Seleccione Talla</option><option value="1">Talla S</option><option value="2">Talla M</option> <option value="3">Talla L</option><option value="4">Talla XL</option><option value="5">Talla XXL</option><option value="6">Punto</option></select></div>'+
         '<div class="  "><input type="number" class="form-control" id="tsid'+d.op+
         '1" name="can_terminada" aria-describedby="number" placeholder="cantidad"></div>'+
@@ -440,11 +441,10 @@ function format ( d ) {
         '<div class="col-3">'+
         '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Registrada</h6></center><br>'+
         'terminada: '+d.canTerminada+'='+d.total+'<br>'+
-        '<br>'+'Tallas'+d.tallaS+
-        '<br>'+
+        'Tallas'+d.tallaS+'<br>'+
         'Cantidad faltante: '+d.canFaltante+'<br>'+
         'Nota : '+d.nota+'<br>'+
-        'Estatus : Abierta </div>'+
+        '<p>Estado:'+d.estado+'</p></div>'+
 
         '<div class="col-3">'+
         '<center><h6 class="modal-title w-100 font-weight-bold">Accion</h6><br></center>'+
@@ -478,7 +478,7 @@ function format ( d ) {
         '</div></form></div></div></div></div></div></div><div class="text-center">'+
         '<button  href="" class="btn btn-outline-warning btn-rounded mb-2" data-toggle="modal" data-target="#modalSubscriptionFor"><i class="far fa-edit" aria-hidden="true"></i></button>'+
 
-        '<form method="POST" action="./delete" style="display: inline" >'+
+        '<form method="POST" action="./delete" style="display: inline" onSubmit="if(!confirm("Is the form filled out correctly?")){return false;}" >'+
         '<input type="hidden" value="'+d.id_pr+'" name="id_pren">'+
         '<input type="hidden" value="'+d.id_operacion+'" name="id_op">'+
         '<button type="submit"   class="btn btn btn-outline-danger btn-rounded mb-2" ><i class="far fa-trash-alt" aria-hidden="true"></i></button>'+
