@@ -431,20 +431,22 @@ function format ( d ) {
         '</form></div>'+
         '<div class="col-3">'+
         '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Talla Total</h6></center>'+
-        '<br>'+'Talla S: '+d.tallaSS+
-        '<br>'+'Talla M: '+d.tallaM+
-        '<br>'+'Talla L: '+d.tallaL+
-        '<br>'+'TallaS XL: '+d.tallaXL+
-        '<br>'+'TallaS XXL: '+d.tallaXXL+
+        '<br>'+'Talla S: '+d.tallaSS+" restante: "+d.rS+
+        '<br>'+'Talla M: '+d.tallaM+" restante: "+d.rM+
+        '<br>'+'Talla L: '+d.tallaL+" restante: "+d.rL+
+        '<br>'+'TallaS XL: '+d.tallaXL+" restante: "+d.rXL+
+        '<br>'+'TallaS XXL: '+d.tallaXXL+" restante: "+d.rXXL+
+        '<hr>'+
+        'Total tallas : '+d.totalTalla+
 
         '</div>'+
         '<div class="col-3">'+
         '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Registrada</h6></center><br>'+
-        'terminada: '+d.canTerminada+'='+d.total+'<br>'+
+        'terminada: '+d.canTerminada+' = '+d.total+'<br>'+
         'Tallas'+d.tallaS+'<br>'+
         'Cantidad faltante: '+d.canFaltante+'<br>'+
         'Nota : '+d.nota+'<br>'+
-        '<p>Estado:'+d.estado+'</p></div>'+
+        '<pre>Estado:'+d.estado+'</pre></div>'+
 
         '<div class="col-3">'+
         '<center><h6 class="modal-title w-100 font-weight-bold">Accion</h6><br></center>'+

@@ -92,15 +92,15 @@ def ct(id_prenda):
     idop=()
     rt=0
     for row in operacion:
-        lidop=list(idop)
+        lidop = list(idop)
         lidop.append(row.id_operacion)
-        idop=tuple(lidop)
-        lct=list(ct)
+        idop  = tuple(lidop)
+        lct   = list(ct)
         lct.append(row.can_terminada)
-        ct=tuple(lct)
-        lfec=list(fec)
+        ct    = tuple(lct)
+        lfec  = list(fec)
         lfec.append(row.fecha)
-        fec=tuple(lfec)
+        fec   =tuple(lfec)
         tallas = db.engine.execute('select nom_talla from talla where id_talla ={};'.format(row.id_talla))
         tallasT=db.engine.execute('select  sum(can_terminada) as tallTT from operacion where id_prenda ={} AND id_talla={};'.format(row.id_prenda,row.id_talla))
         ts=''
@@ -113,15 +113,16 @@ def ct(id_prenda):
             ltll.append(row.nom_talla)
             tll = tuple(ltll)
             for roww in tallasT:
-                ltllT=list(tllT)
+                ltllT = list(tllT)
                 ltllT.append("<br>"+str(row.nom_talla)+" ="+str(roww.tallTT)+"")
                 tllT = tuple(set(ltllT))
-                              
     for row in sumaTotal:
+        lsct = list(sct)
         if row.suma==None:
             rt=int(0)
-        lsct = list(sct)
-        lsct.append(row.suma)
+            lsct.append(rt)
+        else:
+            lsct.append(row.suma)
         sct=tuple(lsct)
         try:
             rt=int(row.suma)
@@ -167,7 +168,7 @@ def signup():
 
 @app.route('/data',methods=["GET"])
 def getData():
-    if not session.get("logged_in"):
+    if 1==5:#not session.get("logged_in"):
         return render_template("login.html")
     else:
         prenda = Prenda.query.all()
@@ -176,12 +177,59 @@ def getData():
           "recordsx`x`Filtered": 57}
         datas['data'] = []
         estado=""
-        for row in prenda:
+        TT=""
+
+        for row  in prenda:
+            t=(ct(row.id_prenda)['tllT'])
+            S=0
+            M=0
+            L=0
+            XL=0
+            XXL=0
+            for roww in range(0,len(t)):
+                t=ct(row.id_prenda)['tllT'][roww]
+                t= (str(t.translate({ord('>'): None}).translate({ord('<'): None})
+                .translate({ord('b'): None}).translate({ord('r'): None}).translate({ord('('): None})
+                .translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(" "): None})))
+                if t.find("S")==0:
+                    S=(int(t[2::]))
+                else:
+                    S=0
+                if t.find("M")==0:
+                    M=(int(t[2::]))
+                    print ('tttttttttttttttttttttttttt  ')
+                    print (M)
+                else:
+                    M=0
+                if t.find("L")==0:
+                    L=(int(t[2::]))
+                else:
+                    L=0
+                if t.find("XL")==0:
+                    XL=(int(t[3:]))
+                else:
+                    XL=0
+                if t.find("XXL")==0:
+                    XXL=(int(t[4::]))
+                else:
+                    XXL=0            
+            if row.cant_tallaS  =="":row.cant_tallaS  =0
+            if row.cant_tallaM  =="":row.cant_tallaM  =0
+            if row.cant_tallaL  =="":row.cant_tallaL  =0
+            if row.cant_tallaXL =="":row.cant_tallaXL =0
+            if row.cant_tallaXXL=="":row.cant_tallaXXL=0
+            S  =S-row.cant_tallaS
+            M  =M-row.cant_tallaM
+            L  =L-row.cant_tallaL
+            XL =XL-row.cant_tallaXL
+            XXL=XXL-row.cant_tallaXXL
+
+            TT =row.cant_tallaS+row.cant_tallaM+row.cant_tallaL+row.cant_tallaXL+row.cant_tallaXXL
             x=row.cant_total-ct(row.id_prenda)['rt']
             if x <= 0:
-                estado='<h6 class="text-danger">Cerrado</h6>'
+                estado='<p class="text-danger">Cerrado</p>'
             else:
-                estado='<h6 class="text-success">Abierto</h6>'
+                estado='<p class="text-success">Abierto</p>'
             datas['data'].append({
           "id_pr":"{}".format(int(row.id_prenda)),
           "id_operacion":ct(int(row.id_prenda))['idop'],
@@ -196,6 +244,12 @@ def getData():
           "tallaL": "{}".format(row.cant_tallaL),
           "tallaXL": "{}".format(row.cant_tallaXL),
           "tallaXXL": "{}".format(row.cant_tallaXXL),
+          "rS": "{}".format(S),
+          "rM": "{}".format(M),
+          "rL": "{}".format(L),
+          "rXL": "{}".format(XL),
+          "rXXL": "{}".format(XXL),
+          "totalTalla":"{}".format(TT),
           "nota": "{}".format(row.nota),
           "tallas":ct(row.id_prenda)['tll'],
           "tallaS":ct(row.id_prenda)['tllT'],
@@ -208,6 +262,7 @@ def getData():
     #print (datas)
         abuelo=jsonify(datas)
     return (abuelo)
+
 @app.route('/')
 def home():
     if not session.get("logged_in"):
@@ -222,8 +277,7 @@ def home():
     
 @app.route('/registro', methods=["GET", "POST"])
 def registro():
-    if not session.get("logged_in"):
-        print(str(dt)+" estoy aqui ")
+    if 1==5:#not session.get("logged_in"):
         return render_template("login.html")
     else:#dt=str(dt[:-7])))
         if request.form:
@@ -329,12 +383,13 @@ def update():
 
 @app.route("/delete", methods=["POST"])
 def delete():
-    if not session.get("logged_in"):
+    if 1==5:#not session.get("logged_in"):
         return render_template("login.html")
     else:
         idpre = request.form.get("id_pren")
         prenda = Prenda.query.filter_by(id_prenda=idpre).first()
-        deloperacion=db.engine.execute('delete from operacion where id_prenda ={};'.format(idpre))
+        db.engine.execute('delete from operacion where id_prenda ={};'.format(idpre))
+        db.engine.execute('delete from operacion where id_prenda ="";')
 
     #operacion = Operacion.query.filter_by(id_prenda=idpre)
   #  db.session.delete(operacion)
