@@ -1,40 +1,32 @@
-import os
-from flask import Flask, jsonify, make_response,url_for
-from flask import redirect
-from flask import render_template
-from flask import request
-import json
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime as DT,timedelta
-from random import choice
-from flask_cors import CORS, cross_origin
-from flask import  flash, session, abort
-
-
-project_dir = os.path.dirname(os.path.abspath(__file__))
-database_file = "sqlite:///{}".format(os.path.join(project_dir, "polodb.db"))
-
-app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = database_file
-app.config['SECRET_KEY'] = os.urandom(16)
-app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=120)
-
-
-dt=DT.now()
-db = SQLAlchemy(app)
-
-
-
+try:
+    import os
+    from flask import Flask, jsonify, make_response,url_for
+    from flask import redirect
+    from flask import render_template
+    from flask import request
+    import json
+    from flask_sqlalchemy import SQLAlchemy
+    from datetime import datetime as DT,timedelta
+    from random import choice
+    from flask_cors import CORS, cross_origin
+    from flask import  flash, session, abort
+except Exception as e:print("Failed to import "+str(e))
+try:
+    project_dir = os.path.dirname(os.path.abspath(__file__))
+    database_file = "sqlite:///{}".format(os.path.join(project_dir, "polodb.db"))
+    app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_file
+    app.config['SECRET_KEY'] = os.urandom(16)
+    app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=120)
+    dt=DT.now()
+    db = SQLAlchemy(app)
+except Exception as e:print("Failed in values"+str(e))
 
 
 def gerar_token(tamanho):
     chars = "0123456789ABCDEFGHIJKLMNOPQRSTUWVXYZ"
-
     password = ""
-
-    for char in range(tamanho):
-        password += choice(chars)
-
+    for char in range(tamanho):password += choice(chars)
     return password
 
 class Users(db.Model):
@@ -43,7 +35,6 @@ class Users(db.Model):
     email           =db.Column(db.String(56),nullable=False)
     password        =db.Column(db.String(56),nullable=False)
     contact         =db.Column(db.String(56),nullable=False)
-
 
 class Prenda(db.Model):
     id_prenda   =db.Column(db.Integer,    unique=True, nullable=False, primary_key=True)
@@ -63,7 +54,7 @@ class Prenda(db.Model):
     def __repr__(self):
         #return self.op
         return "<OP: {}>".format(self.op)
-        
+
 class Operacion(db.Model):
     id_operacion  = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
     id_prenda     = db.Column(db.Integer)
@@ -80,10 +71,10 @@ class Talla(db.Model):
     def __repr__(self):
         return "<Title: {}>".format(self.nom_talla)
 db.create_all()
+
 def ct(id_prenda):
     operacion = db.engine.execute('select * from operacion where id_prenda ={};'.format(int(id_prenda)))
     sumaTotal = db.engine.execute('select sum(can_terminada) as suma from operacion where id_prenda ={};'.format(id_prenda))
-    
     sct=()
     ct=()
     fec=()
@@ -141,9 +132,7 @@ def ct(id_prenda):
 def login():
     POST_USERNAME = str(request.form['username'])
     POST_PASSWORD = str(request.form['password'])
-
     registered_user = Users.query.filter_by(username=POST_USERNAME, password=POST_PASSWORD).first()
-
     if not registered_user is None:
         session['logged_in'] = True
     else:
@@ -165,7 +154,6 @@ def signup():
     else:
         return render_template('index.html')
 
-
 @app.route('/data',methods=["GET"])
 def getData():
     if 1==5:#not session.get("logged_in"):
@@ -176,54 +164,51 @@ def getData():
           "recordsTotal": 57,
           "recordsx`x`Filtered": 57}
         datas['data'] = []
-        estado=""
-        TT=""
-
+        L=0
         for row  in prenda:
             t=(ct(row.id_prenda)['tllT'])
-            S=0
-            M=0
-            L=0
-            XL=0
-            XXL=0
+            row.op=row.op.upper()
+            row.referencia=row.referencia.upper()
             for roww in range(0,len(t)):
                 t=ct(row.id_prenda)['tllT'][roww]
                 t= (str(t.translate({ord('>'): None}).translate({ord('<'): None})
                 .translate({ord('b'): None}).translate({ord('r'): None}).translate({ord('('): None})
                 .translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(" "): None})))
-                if t.find("S")==0:
-                    S=(int(t[2::]))
-                else:
-                    S=0
-                if t.find("M")==0:
-                    M=(int(t[2::]))
-                    print ('tttttttttttttttttttttttttt  ')
-                    print (M)
-                else:
-                    M=0
-                if t.find("L")==0:
-                    L=(int(t[2::]))
-                else:
-                    L=0
-                if t.find("XL")==0:
-                    XL=(int(t[3:]))
-                else:
-                    XL=0
-                if t.find("XXL")==0:
-                    XXL=(int(t[4::]))
-                else:
-                    XXL=0            
+
+                if t.find("S")==0:S=(int(t[2::]))
+                else:pass
+                if t.find("M")==0:M=(int(t[2::]))
+                else:pass
+                if t.find("L")==0:L=(int(t[2::]))
+                else:pass
+                if t.find("XL")==0:XL=(int(t[3:]))
+                else:pass
+                if t.find("XXL")==0:XXL=(int(t[4::]))
+                else:pass
+            
             if row.cant_tallaS  =="":row.cant_tallaS  =0
             if row.cant_tallaM  =="":row.cant_tallaM  =0
             if row.cant_tallaL  =="":row.cant_tallaL  =0
             if row.cant_tallaXL =="":row.cant_tallaXL =0
             if row.cant_tallaXXL=="":row.cant_tallaXXL=0
-            S  =S-row.cant_tallaS
-            M  =M-row.cant_tallaM
-            L  =L-row.cant_tallaL
-            XL =XL-row.cant_tallaXL
-            XXL=XXL-row.cant_tallaXXL
+            
+            S  =row.cant_tallaS-S
+            M  =row.cant_tallaM-M
+            L  =row.cant_tallaL-L
+            XL =row.cant_tallaXL-XL
+            XXL=row.cant_tallaXXL-XXL
+            if S  <0:S  =("se pasa ("+str(S*-1)  +")")
+            if M  <0:M  =("se pasa ("+str(M*-1)  +")")
+            if L  <0:L  =("se pasa ("+str(L*-1)  +")")
+            if XL <0:XL =("se pasa ("+str(XL*-1) +")")
+            if XXL<0:XXL=("se pasa ("+str(XXL*-1)+")")
 
+            if S  ==0:S  =("(Completa!)")
+            if M  ==0:M  =("(Completa!)")
+            if L  ==0:L  =("(Completa!)")
+            if XL ==0:XL =("(Completa!)")
+            if XXL==0:XXL=("(Completa!)")
+            
             TT =row.cant_tallaS+row.cant_tallaM+row.cant_tallaL+row.cant_tallaXL+row.cant_tallaXXL
             x=row.cant_total-ct(row.id_prenda)['rt']
             if x <= 0:
@@ -258,9 +243,8 @@ def getData():
           "canFaltante": "{}".format(row.cant_total-ct(row.id_prenda)['rt']),
           "estado": estado,
 })
-            
-    #print (datas)
         abuelo=jsonify(datas)
+   # print (datas)
     return (abuelo)
 
 @app.route('/')
@@ -270,11 +254,7 @@ def home():
     else:
         return redirect(url_for('registro'))#"Hello, Boss! <a href=\"/logout\"> Logout"
     return render_template('login.html')
-
-
-
-
-    
+   
 @app.route('/registro', methods=["GET", "POST"])
 def registro():
     if 1==5:#not session.get("logged_in"):
@@ -315,7 +295,6 @@ def registro():
   
     gdt=getData()
     return render_template("tr.html",dgt=gdt)
-
 
 @app.route("/update", methods=["POST"])
 def update():
@@ -401,6 +380,7 @@ def delete():
 def logout():
     session['logged_in'] = False
     return home()
+
 if __name__ == '__main__':
     app.debug = True
     app.secret_key =gerar_token(8)

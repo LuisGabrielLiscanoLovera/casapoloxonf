@@ -6,8 +6,6 @@
 <link href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
 <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
 
-
-
 <!-- JQuery -->
 <!-- Bootstrap tooltips -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
@@ -431,11 +429,11 @@ function format ( d ) {
         '</form></div>'+
         '<div class="col-3">'+
         '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Talla Total</h6></center>'+
-        '<br>'+'Talla S: '+d.tallaSS+" restante: "+d.rS+
-        '<br>'+'Talla M: '+d.tallaM+" restante: "+d.rM+
-        '<br>'+'Talla L: '+d.tallaL+" restante: "+d.rL+
-        '<br>'+'TallaS XL: '+d.tallaXL+" restante: "+d.rXL+
-        '<br>'+'TallaS XXL: '+d.tallaXXL+" restante: "+d.rXXL+
+        '<br>'+'Talla S: '+d.tallaSS+" falta :"+d.rS+
+        '<br>'+'Talla M: '+d.tallaM+" falta :"+d.rM+
+        '<br>'+'Talla L: '+d.tallaL+" falta :"+d.rL+
+        '<br>'+'TallaS XL: '+d.tallaXL+" falta :"+d.rXL+
+        '<br>'+'TallaS XXL: '+d.tallaXXL+" falta :"+d.rXXL+
         '<hr>'+
         'Total tallas : '+d.totalTalla+
 
@@ -449,8 +447,8 @@ function format ( d ) {
         '<pre>Estado:'+d.estado+'</pre></div>'+
 
         '<div class="col-3">'+
-        '<center><h6 class="modal-title w-100 font-weight-bold">Accion</h6><br></center>'+
-        '<div class="container my-4"><p class="font-weight-bold h1"></p><hr><div class="modal fade" id="modalSubscriptionFor" tabindex="-1" role="dialog" aria-labelledby="myModalLabe" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header text-center"><h4 class="modal-title w-100 font-weight-bold">Editar registro Polo</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+        '<center><h6 class="modal-title w-100 font-weight-bold">Accion<hr></h6></center>'+
+        '<div class="container my-4"><div class="modal fade" id="modalSubscriptionFor" tabindex="-1" role="dialog" aria-labelledby="myModalLabe" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header text-center"><h4 class="modal-title w-100 font-weight-bold">Editar registro Polo</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
         '</div><div class="modal-body mx-6">'+
         '<form  method="POST" action="./update">'+
         '<div class="form-group  mx-sm-3 mb-2">'+
@@ -502,7 +500,7 @@ $(document).ready(function() {
         "language": {
             "search":"Buscar: ",
             "lengthMenu": " Mostrar _MENU_ registro por paguina",
-            "zeroRecords": "No hay datos disponible",
+            'zeroRecords': '<div class="spinner-border text-success" role="status"><span class="sr-only">Loading...</span></div>',
             "info": " Mostrar por pagina _PAGE_ of _PAGES_",
             "infoEmpty": " No hay datos disponible",
             "infoFiltered": "(filtrado de  _MAX_ regstro t5atal)"
