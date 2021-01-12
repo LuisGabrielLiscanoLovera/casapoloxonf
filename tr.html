@@ -333,14 +333,12 @@ tr.shown td.details-control {
 
 
 <div class="container my-4">
-
-    <p class="font-weight-bold h1"></p> <hr>
   <div class="modal fade" id="modalSubscriptionForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
   aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold text-muted mb-5">Sistema de registro Polo</h4>
+        <h4 class="modal-title w-100 font-weight-bold text-muted mb-5">Sistema de registro Casa de Polo</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -348,8 +346,7 @@ tr.shown td.details-control {
       <div class="modal-body mx-6">
          
   <form  id="myform" method="POST" action="/registro" >
-   <div class="md-for form-group  mx-sm-3 mb-2">
-      
+   <div class="md-for form-group  mx-sm-3 mb-2">      
       <input  class="form-contro-md" type="text" placeholder="Codigo de operacion (OP)" name="op">
       <input  class="form-contro-md" type="text" placeholder="Referencia" name="referencia">
       <input  class="form-contro-md" type="number" placeholder="Color" name="color">
@@ -377,8 +374,7 @@ tr.shown td.details-control {
 </div></div>
 
 <div class="text-center">
-  <a href="" class="btn btn-outline-blue btn-rounded mb-4" data-toggle="modal" data-target="#modalSubscriptionForm">Agregar Operacion <i class="fas fa-plus"></i></a>
-</div>
+  <a href="" class="btn btn-outline-blue btn-rounded mb-4" data-toggle="modal" data-target="#modalSubscriptionForm">Agregar Operacion <i class="fas fa-plus"></i></a></div>
 
      
 
@@ -416,7 +412,7 @@ function format ( d ) {
  // alert( key + ": " + value );
 //});
     return'<div class="row"><div class="col-3">'+
-        '<form method="POST" action="/registro"><div class="form-group"><center><label class="form-group">'+
+        '<form method="POST" action="/operacion"><div class="form-group"><center><label class="form-group">'+
         '<h6 class="modal-title w-100 font-weight-bold ">Registar Tarea</h6></label></center>'+
         '<div class=" "><select class="form-control-sm custom-select" name="id_talla"><option selected>Seleccione Talla</option><option value="1">Talla S</option><option value="2">Talla M</option> <option value="3">Talla L</option><option value="4">Talla XL</option><option value="5">Talla XXL</option><option value="6">Punto</option></select></div>'+
         '<div class="  "><input type="number" class="form-control" id="tsid'+d.op+
@@ -429,25 +425,22 @@ function format ( d ) {
         '</form></div>'+
         '<div class="col-3">'+
         '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Talla Total</h6></center>'+
-        '<br>'+'Talla S: '+d.tallaSS+" falta :"+d.rS+
-        '<br>'+'Talla M: '+d.tallaM+" falta :"+d.rM+
-        '<br>'+'Talla L: '+d.tallaL+" falta :"+d.rL+
-        '<br>'+'TallaS XL: '+d.tallaXL+" falta :"+d.rXL+
-        '<br>'+'TallaS XXL: '+d.tallaXXL+" falta :"+d.rXXL+
+        '<br>'+'S: ' +d.tallaSS   +" falta : "+d.rS+
+        '<br>'+'M: ' +d.tallaM    +" falta : "+d.rM+
+        '<br>'+'L: ' +d.tallaL    +" falta : "+d.rL+
+        '<br>'+'XL:' +d.tallaXL   +" falta : "+d.rXL+
+        '<br>'+'XXL:'+d.tallaXXL  +" falta : "+d.rXXL+
         '<hr>'+
         'Total tallas : '+d.totalTalla+
-
+        '<br>Cantidad faltante: '+d.canFaltante+
         '</div>'+
         '<div class="col-3">'+
         '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Registrada</h6></center><br>'+
-        'terminada: '+d.canTerminada+' = '+d.total+'<br>'+
-        'Tallas'+d.tallaS+'<br>'+
-        'Cantidad faltante: '+d.canFaltante+'<br>'+
-        'Nota : '+d.nota+'<br>'+
-        '<pre>Estado:'+d.estado+'</pre></div>'+
-
+        'Terminadas: '+d.canTerminada+' = '+d.total+'<br>'+
+        'Tallas'+d.tallaS+
+        '<br></div>'+
         '<div class="col-3">'+
-        '<center><h6 class="modal-title w-100 font-weight-bold">Accion<hr></h6></center>'+
+        '<center><h6 class="modal-title w-100 font-weight-bold">Accion</h6></center>'+
         '<div class="container my-4"><div class="modal fade" id="modalSubscriptionFor" tabindex="-1" role="dialog" aria-labelledby="myModalLabe" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header text-center"><h4 class="modal-title w-100 font-weight-bold">Editar registro Polo</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
         '</div><div class="modal-body mx-6">'+
         '<form  method="POST" action="./update">'+
@@ -482,7 +475,11 @@ function format ( d ) {
         '<input type="hidden" value="'+d.id_pr+'" name="id_pren">'+
         '<input type="hidden" value="'+d.id_operacion+'" name="id_op">'+
         '<button type="submit"   class="btn btn btn-outline-danger btn-rounded mb-2" ><i class="far fa-trash-alt" aria-hidden="true"></i></button>'+
-        '</form></div></div>'+
+        '</form></div>'+
+        '<div><hr>'+
+        //'<button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="left" title="'+d.nota+'">Nota</button>'+
+        
+        '<div class=" " style="width: 7rem;height: 3rem;" "><h6>Estado:'+d.estado+'</h6></div></div></div>'+
         '</div>';
 }
 /*
