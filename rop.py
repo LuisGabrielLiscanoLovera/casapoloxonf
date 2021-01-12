@@ -179,20 +179,46 @@ def getData():
         for row  in prenda:
             row.op=row.op.upper()
             row.referencia=row.referencia.upper()
+            canFalt=row.cant_total-ct(row.id_prenda)['rt']
+           
             S  =row.rS
             M  =row.rM
             L  =row.rL
             XL =row.rXL
-            XXL=row.rXXL            
+            XXL=row.rXXL
+            if canFalt  ==0:canFalt=('<d class="text-info">(Completa!)</d>')
+            elif canFalt  <0:canFalt =("se pasa por ("+str(canFalt*-1)  +")")
+            else:canFalt=('<d class="text-danger">(faltan : '+str(canFalt)+')</d>')
+
+            if S  ==0:S  =('<d class="text-info">(Completa!)</d>')
+            elif S  <0:S =("se pasa por ("+str(S*-1)  +")")
+            else:S  =('<d class="text-danger">(faltan : '+str(S)+')</d>')
+            if M  ==0:M  =('<d class="text-info">(Completa!)</d>')
+            elif M  <0:M =("se pasa por ("+str(M*-1)  +")")
+            else:M  =('<d class="text-danger">(faltan : '+str(M)+')</d>')
+            if L  ==0:L  =('<d class="text-info">(Completa!)</d>')
+            elif L  <0:L =("se pasa por ("+str(L*-1)  +")")
+            else:L  =('<d class="text-danger">(faltan : '+str(L)+')</d>')
+            if XL ==0:XL =('<d class="text-info">(Completa!)</d>')
+            elif XL  <0:XL =("se pasa por ("+str(XL*-1)  +")")
+            else:XL  =('<d class="text-danger">(faltan : '+str(XL)+')</d>')
+            if XXL==0:XXL=('<d class="text-info">(Completa!)</d>')
+            elif XXL  <0:XXL =("se pasa por ("+str(XXL*-1)  +")")
+            else:XXL  =('<d class="text-danger">(faltan : '+str(XXL)+')</d>')
+
             TT = int(row.cant_tallaS)+int(row.cant_tallaM)+int(row.cant_tallaL)+int(row.cant_tallaXL)+int(row.cant_tallaXXL)
             X  = row.cant_total-ct(row.id_prenda)['rt']
+            
             if X <= 0:
-                estado='<p class="text-danger">Cerrado</p>'
+                estado='<p class="text-success">Cerrado</p>'
+                opD='<p class="text-success">'+row.op+'</p>'
             else:
-                estado='<p class="text-success">Abierto</p>'
+                estado='<p class="text-info">Abierto</p>'
+                opD='<p class="text-info">'+row.op+'</p>'
             datas['data'].append({
           "id_pr":"{}".format(int(row.id_prenda)),
           "id_operacion":ct(int(row.id_prenda))['idop'],
+          "opD": "{}".format(opD),
           "op": "{}".format(row.op),
           "referencia":"{}".format(row.referencia),
           "color": "{}".format(row.id_color),
@@ -215,7 +241,7 @@ def getData():
           "tallaS":ct(row.id_prenda)['tllT'],
           "total":ct(row.id_prenda)['sct'],
           "feechaOperacion": ct(row.id_prenda)['fecp'],
-          "canFaltante": "{}".format(row.cant_total-ct(row.id_prenda)['rt']),
+          "canFaltante": "{}".format(canFalt),
           "estado": estado,
 })
         abuelo=jsonify(datas)
@@ -235,21 +261,21 @@ def registro():
     if 1==5:#not session.get("logged_in"):
         return render_template("login.html")
     else:#dt=str(dt[:-7])))
-        verTalla=db.engine.execute('SELECT True as t FROM talla LIMIT 1')
-        for vert in verTalla:
-            if (vert.t)==1:pass
-            else:            
-                db.engine.execute("insert into users values(1,'admin','ccidbcomputacion@gmail.com','admin','3117569482');")
-                db.engine.execute("insert into talla values(1,'S');")
-                db.engine.execute("insert into talla values(2,'M');")
-                db.engine.execute("insert into talla values(3,'L');")
-                db.engine.execute("insert into talla values(4,'XL');")
-                db.engine.execute("insert into talla values(5,'XXL');")
-                db.engine.execute("insert into talla values(6,'Punto');")
+        
+        try:
+            db.engine.execute("insert into users values(1,'admin','ccidbcomputacion@gmail.com','admin','3117569482');")
+            db.engine.execute("insert into talla values(1,'S');")
+            db.engine.execute("insert into talla values(2,'M');")
+            db.engine.execute("insert into talla values(3,'L');")
+            db.engine.execute("insert into talla values(4,'XL');")
+            db.engine.execute("insert into talla values(5,'XXL');")
+            db.engine.execute("insert into talla values(6,'Punto');")
+        except Exception as e:pass
+        
         if request.form:
             try:
-                op           =request.form.get("op")
-                referencia   =request.form.get("referencia")
+                op           =request.form.get("op").upper()
+                referencia   =request.form.get("referencia").upper()
                 id_color     =request.form.get("color")
                 cant_total   =request.form.get("cant_total")
                 cant_tallaS  =request.form.get("cant_tallaS")
@@ -305,6 +331,8 @@ def operacion():
     else:
         if request.form:
             try:
+                restar=request.form.get("restar")
+                print(restar)
                 id_talla=request.form.get("id_talla")
                 can_terminada = request.form.get("can_terminada")
                 resta = Prenda.query.filter_by(id_prenda=request.form.get("id_prenda")).first()
@@ -338,16 +366,17 @@ def operacion():
 @app.route("/update", methods=["POST"])
 def update():
     try:
-        opnew=request.form.get("op"),
-        referencianew = request.form.get("referencia"),
-        id_colornew   = request.form.get("color"),
-        cant_totalnew = request.form.get("cant_total"),
-        cant_tallaSnew = request.form.get("cant_tallaS"),
-        cant_tallaMnew = request.form.get("cant_tallaM"),
-        cant_tallaLnew = request.form.get("cant_tallaL"),
-        cant_tallaXLnew = request.form.get("cant_tallaXL"),
-        cant_tallaXXLnew = request.form.get("cant_tallaXXL"),
+        opnew=request.form.get("op").upper()
+        referencianew = request.form.get("referencia").upper()
+        id_colornew   = request.form.get("color")
+        cant_totalnew = request.form.get("cant_total")
+        cant_tallaSnew = request.form.get("cant_tallaS")
+        cant_tallaMnew = request.form.get("cant_tallaM")
+        cant_tallaLnew = request.form.get("cant_tallaL")
+        cant_tallaXLnew = request.form.get("cant_tallaXL")
+        cant_tallaXXLnew = request.form.get("cant_tallaXXL")
         notanew = request.form.get("nota")
+        
         if (str(id_colornew))=="None":cant_total=0
         if (str(cant_totalnew))=="None":cant_total=0
         if (str(cant_tallaSnew))=="None":cant_tallaS=0
@@ -356,8 +385,9 @@ def update():
         if (str(cant_tallaXLnew))=="None":cant_tallaXL=0
         if (str(cant_tallaXXLnew))=="None":cant_tallaXXL=0
 
-        opold=request.form.get("opold")
-        referenciaold = request.form.get("referenciaold")
+        
+        opold=request.form.get("opold").upper()
+        referenciaold = request.form.get("referenciaold").upper()
         id_colorold   = request.form.get("colorold")
         cantidadTotalold = request.form.get("cantidadTotalold")
         cant_tallaSold = request.form.get("cant_tallaSold")
