@@ -219,7 +219,7 @@ def getData():
           "estado": estado,
 })
         abuelo=jsonify(datas)
-    print (datas)
+    #print (datas)
     return (abuelo)
 
 @app.route('/')
@@ -235,6 +235,17 @@ def registro():
     if 1==5:#not session.get("logged_in"):
         return render_template("login.html")
     else:#dt=str(dt[:-7])))
+        verTalla=db.engine.execute('SELECT True as t FROM talla LIMIT 1')
+        for vert in verTalla:
+            if (vert.t)==1:pass
+            else:            
+                db.engine.execute("insert into users values(1,'admin','ccidbcomputacion@gmail.com','admin','3117569482');")
+                db.engine.execute("insert into talla values(1,'S');")
+                db.engine.execute("insert into talla values(2,'M');")
+                db.engine.execute("insert into talla values(3,'L');")
+                db.engine.execute("insert into talla values(4,'XL');")
+                db.engine.execute("insert into talla values(5,'XXL');")
+                db.engine.execute("insert into talla values(6,'Punto');")
         if request.form:
             try:
                 op           =request.form.get("op")
