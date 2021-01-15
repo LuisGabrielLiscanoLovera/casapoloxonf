@@ -426,7 +426,7 @@ function format ( d ) {
     return'<div class="row"><div class="col-3">'+
         '<form method="POST" action="/operacion"><div class="form-group"><center><label class="form-group">'+
         '<h6 class="modal-title w-100 font-weight-bold ">Registar Tarea</h6></label></center>'+
-        '<div class=" "><select class="form-control-sm custom-select" name="id_talla"><option selected>Seleccione Talla</option><option value="1">Talla S</option><option value="2">Talla M</option> <option value="3">Talla L</option><option value="4">Talla XL</option><option value="5">Talla XXL</option><option value="6">Punto</option></select></div>'+
+        '<div class=" "><select class="form-control-sm custom-select" name="id_talla"><option selected>Seleccione Talla</option><option value="1">Talla S</option><option value="2">Talla M</option> <option value="3">Talla L</option><option value="4">Talla XL</option><option value="5">Talla XXL</option></select></div>'+
         '<div class="  "><input type="number" class="form-control" id="tsid'+d.op+
         '1" name="can_terminada" aria-describedby="number" placeholder="cantidad"></div>'+
         '<input type="number" hidden="true" id="tsid'+d.op+
@@ -440,21 +440,33 @@ function format ( d ) {
         '</form></div>'+
         '<div class="col-3">'+
         '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Talla Total</h6></center>'+
-        '<br>'+'S: ' +d.tallaSS   +"  "+d.rS+
-        '<br>'+'M: ' +d.tallaM    +"  "+d.rM+
-        '<br>'+'L: ' +d.tallaL    +"  "+d.rL+
-        '<br>'+'XL:' +d.tallaXL   +"  "+d.rXL+
-        '<br>'+'XXL:'+d.tallaXXL  +"  "+d.rXXL+
+        '<div class="row" >'+
+        '<div class="col-sm-4">'+
+        '<br>S    :' +d.tallaSS   +
+        '<br>M    :' +d.tallaM    +
+        '<br>L    :' +d.tallaL    +
+        '<br>XL   :' +d.tallaXL   +
+        '<br>XXL  :' +d.tallaXXL  +
+        '</div>'+
+        '<div class="col-sm-6">'+
+        '<br>'+d.rS+
+        '<br>'+d.rM+
+        '<br>'+d.rL+
+        '<br>'+d.rXL+
+        '<br>'+d.rXXL+
+        '</div>'+
+        '</div>'+       
         '<hr>'+
         'Total tallas : '+d.totalTalla+
         '<br>Cantidad '+d.canFaltante+
         '</div>'+
         '<div class="col-3">'+
-        '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Registrada</h6></center><br>'+
-        'Terminadas  : '+d.total+'<br>'+
+        '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Registrada '+d.total+' </h6></center><br>'+
+        
         'Tallas'+d.tallaS+
-        '<br></div>'+
-        '<div class="col-3">'+
+        '<br>'+
+                
+        '</div><div class="col-3">'+
         '<center><h6 class="modal-title w-100 font-weight-bold">Accion</h6></center>'+
         '<div class="container my-4"><div class="modal fade" id="modalSubscriptionFor" tabindex="-1" role="dialog" aria-labelledby="myModalLabe" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header text-center"><h4 class="modal-title w-100 font-weight-bold text-muted ms-5">Editar registro Polo</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
         '</div><div class="modal-body mx-6">'+
@@ -537,7 +549,7 @@ $(document).ready(function() {
             { "data": "color" },
             { "data": "fecha" }
         ],
-        "order": [[1, 'asc']]
+        "order": [[1, 'dsc']]
     } );
  
     // Array to track the ids of the details displayed rows

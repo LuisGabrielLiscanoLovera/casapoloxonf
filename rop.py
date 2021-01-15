@@ -128,7 +128,7 @@ def ct(id_prenda):
                 rt=int(0)          
             if roww.sumaR ==None and row.suma==None :pass
             else:
-                lsct.append(int(row.suma)-int(roww.sumaR))
+                lsct.append('[ '+str(int(row.suma)-int(roww.sumaR))+' ]')
                 sct=tuple(lsct)
                 try:
                     rt=int(row.suma-roww.sumaR)
@@ -187,11 +187,11 @@ def getData():
         L=0
         XL=0
         XXL=0
+        i=0
         for row  in prenda:
             row.op=row.op.upper()
             row.referencia=row.referencia.upper()
             canFalt=row.cant_total-ct(row.id_prenda)['rt']
-           
             S  =row.rS
             M  =row.rM
             L  =row.rL
@@ -205,7 +205,6 @@ def getData():
             if canFalt  ==0:canFalt=('<d class="text-info">(Completa!)</d>')
             elif canFalt  <0:canFalt =("se pasa por ("+str(canFalt*-1)  +")")
             else:canFalt=('<d class="text-danger">(faltan : '+str(canFalt)+')</d>')
-            
             if S  ==0:S  =('<d class="text-info">----------</d>')
             elif S  <0:S =("se pasa por ("+str(S*-1)  +")")
             else:S  =('<d class="text-danger">(faltan : '+str(S)+')</d>')
@@ -217,7 +216,7 @@ def getData():
             else:L  =('<d class="text-danger">(faltan : '+str(L)+')</d>')
             if XL ==0:XL =('<d class="text-info">----------</d>')
             elif XL  <0:XL =("se pasa por ("+str(XL*-1)  +")")
-            else:XL  =('(<d class="text-danger">faltan : '+str(XL)+')</d>')
+            else:XL  =('<d class="text-danger">(faltan : '+str(XL)+')</d>')
             if XXL==0:XXL=('<d class="text-info">----------</d>')
             elif XXL  <0:XXL =("se pasa por ("+str(XXL*-1)  +")")
             else:XXL  =('<d class="text-danger">(faltan : '+str(XXL)+')</d>')
@@ -228,13 +227,18 @@ def getData():
             if type(row.cant_tallaXXL)==str:row.cant_tallaXXL=0
             TT = int(row.cant_tallaS)+int(row.cant_tallaM)+int(row.cant_tallaL)+int(row.cant_tallaXL)+int(row.cant_tallaXXL)
             X  = row.cant_total-ct(row.id_prenda)['rt']
+            i=i+1
             
             if X <= 0:
+                Prenda.query.filter_by(id_prenda=row.id_prenda).first().estado = 'Cerrado'
+                db.session.commit()
                 estado='<p class="h6 text-success">Cerrado</p>'
-                opD='<p class="text-success">'+row.op+'</p>'
+                opD='<d class="text-success">'+str(i)+') '+str(row.op)+'</d>'
             else:
+                Prenda.query.filter_by(id_prenda=row.id_prenda).first().estado = 'Abierto'
+                db.session.commit()
                 estado='<p class="h6 text-info">Abierto</p>'
-                opD='<p class="text-info">'+row.op+'</p>'
+                opD='<d class="text-info">'+str(i)+') '+str(row.op)+'</d>'
             datas['data'].append({
           "id_pr":"{}".format(int(row.id_prenda)),
           "id_operacion":ct(int(row.id_prenda))['idop'],
@@ -281,7 +285,7 @@ def registro():
     if 1==5:#not session.get("logged_in"):
         return render_template("login.html")
     else:#dt=str(dt[:-7])))
-        
+
         try:
             db.engine.execute("insert into users values(1,'admin','ccidbcomputacion@gmail.com','admin','3117569482');")
             db.engine.execute("insert into talla values(1,'S');")
@@ -291,10 +295,9 @@ def registro():
             db.engine.execute("insert into talla values(5,'XXL');")
             db.engine.execute("insert into talla values(6,'Punto');")
         except Exception as e:pass
-        
+
         if request.form:
-            
-        
+
             try:
                 op           =request.form.get("op").upper()
                 referencia   =request.form.get("referencia").upper()
@@ -306,7 +309,7 @@ def registro():
                 cant_tallaXL =request.form.get("cant_tallaXL")
                 cant_tallaXXL=request.form.get("cant_tallaXXL")
                 nota         =request.form.get("nota")
-                
+
                 if nota =="":nota="No hay notas para este registro"
                 if cant_total   =="":cant_total   =0
                 if cant_tallaS  =="":cant_tallaS  =0
@@ -332,20 +335,18 @@ def registro():
                 nota = nota,
                 estado=request.form.get("estado"),
                 fecha = dt)
-                
+
                 if (str(request.form.get("op")))=="None" and (str(request.form.get("referencia")))=="None" and (str(request.form.get("color")))=="None" and (str(request.form.get("cant_total")))=="None" and (str(request.form.get("cant_tallaS")))=="None" and (str(request.form.get("cant_tallaM")))=="None" and (str(request.form.get("cant_tallaL")))=="None" and (str(request.form.get("cant_tallaXL")))=="None" and (str(request.form.get("cant_tallaXXL")))=="None" and (str(request.form.get("cant_nota")))=="None" and (str(request.form.get("estado")))=="None":
                     pass
                 if (str(request.form.get("op")))=="None" and (str(request.form.get("referencia")))=="None" and (str(request.form.get("color")))=="None" and (str(request.form.get("cant_total")))=="None":
                     pass
                 else:
-                    predOP=Prenda.query.filter_by(op=op).first() 
-                    if predOP.op==op:
-                        flash('Esta op ('+str(predOP.op)+') ya existe! con una cantidad total '+str(predOP.cant_total)+' estado '+str(predOP.estado))
-                        pass
-                    else:                        
+                    predOP=Prenda.query.filter_by(op=op).first()
+                    if predOP==None:
                         db.session.add(prenda)
                         db.session.commit()
-
+                    else:
+                        if predOP.op==op:flash('Esta op ('+str(predOP.op)+') ya existe! con una cantidad total '+str(predOP.cant_total)+' estado '+str(predOP.estado))
             except Exception as e:
                 print("Failed to add prenda")
                 print(e)
@@ -384,7 +385,7 @@ def operacion():
                     if id_talla=='4':prenda.rXL =(prenda.rXL-int(can_terminada))
                     if id_talla=='5':prenda.rXXL=(prenda.rXXL-int(can_terminada))
 
-                operacion     = Operacion(fecha     =dt,
+                operacion     = Operacion(fecha  =dt,
                                    id_prenda     = request.form.get("id_prenda"),
                                    can_terminada = can_terminada,
                                    can_resta     = can_resta,
@@ -428,18 +429,6 @@ def update():
         if (str(cant_tallaXLnew))=="None":cant_tallaXL=0
         if (str(cant_tallaXXLnew))=="None":cant_tallaXXL=0
 
-        
-        opold=request.form.get("opold").upper()
-        referenciaold = request.form.get("referenciaold").upper()
-        id_colorold   = request.form.get("colorold")
-        cantidadTotalold = request.form.get("cantidadTotalold")
-        cant_tallaSold = request.form.get("cant_tallaSold")
-        cant_tallaMold = request.form.get("cant_tallaMold")
-        cant_tallaLold = request.form.get("cant_tallaLold")
-        cant_tallaXLold = request.form.get("cant_tallaXLold")
-        cant_tallaXXLold = request.form.get("cant_tallaXXLold")
-        notaold = request.form.get("notaold")
-
         prend    = Prenda.query.filter_by(id_prenda=id_prenda).first()
         prend.op = opnew
         prend.referencia    = referencianew
@@ -455,12 +444,8 @@ def update():
         prend.rL  = cant_tallaLnew
         prend.rXL = cant_tallaXLnew
         prend.rXXL= cant_tallaXXLnew
-        prend.nota= notanew              
-        #notas = Prenda.query.filter_by(nota=notaold).first()
-        #for row in notas:
-         #   print(row.nota)
-        #notas.nota = str(notanew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
-        #print(str(notaold,notanew))
+        prend.nota= notanew
+        db.engine.execute('delete from operacion where id_prenda ={};'.format(id_prenda))
         db.session.commit()
     except Exception as e:
         print("Couldn't update book title")
