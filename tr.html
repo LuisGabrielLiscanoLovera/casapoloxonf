@@ -332,13 +332,27 @@ tr.shown td.details-control {
 </header>
 
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert bg-danger alert-{{ category }} alert-dismissible fade show" role="alert">
+                <span>{{ message }}</span>
+                <button type="button" class="close btn " data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
 <div class="container my-4">
   <div class="modal fade" id="modalSubscriptionForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
   aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold text-muted mb-5">Sistema de registro Casa de Polo</h4>
+        <h4 class="modal-title w-100 font-weight-bold text-muted ms-5">Sistema de registro Casa de Polo</h4>
         
       </div>
       <div class="modal-body mx-6">
@@ -437,12 +451,12 @@ function format ( d ) {
         '</div>'+
         '<div class="col-3">'+
         '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Registrada</h6></center><br>'+
-        'Terminadas  = '+d.total+'<br>'+
+        'Terminadas  : '+d.total+'<br>'+
         'Tallas'+d.tallaS+
         '<br></div>'+
         '<div class="col-3">'+
         '<center><h6 class="modal-title w-100 font-weight-bold">Accion</h6></center>'+
-        '<div class="container my-4"><div class="modal fade" id="modalSubscriptionFor" tabindex="-1" role="dialog" aria-labelledby="myModalLabe" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header text-center"><h4 class="modal-title w-100 font-weight-bold">Editar registro Polo</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+        '<div class="container my-4"><div class="modal fade" id="modalSubscriptionFor" tabindex="-1" role="dialog" aria-labelledby="myModalLabe" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header text-center"><h4 class="modal-title w-100 font-weight-bold text-muted ms-5">Editar registro Polo</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
         '</div><div class="modal-body mx-6">'+
         '<form  method="POST" action="./update">'+
         '<div class="form-group  mx-sm-3 mb-2">'+
@@ -465,8 +479,8 @@ function format ( d ) {
         '<input type="number" name="cant_tallaXLold" hidden="true" value="'+d.tallaXL+'">'+
         '<input  class="form-contro-sm" type="number" placeholder="Talla XXL" name="cant_tallaXXL" value="'+d.tallaXXL+'">'+
         '<input type="number" name="cant_tallaXXLold" hidden="true" value="'+d.tallaXXL+'">'+
-        '<input  class="form-contro-sm" disabled type="text" placeholder="Nota" name="nota" value="'+d.nota+'">'+
-        '<input type="number" name="notaold" hidden="true" value="'+d.nota+'">'+
+        '<input  class="form-contro-sm" type="text" placeholder="Nota" name="nota" value="'+d.nota+'">'+
+        '<input type="text" name="notaold" hidden="true" value="'+d.nota+'">'+
         '<div class="modal-footer d-flex justify-content-center">'+
         '<input type="submit"  class="btn btn-outline-success" value="Guardar">'+
         '<button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cerrar</button>'+

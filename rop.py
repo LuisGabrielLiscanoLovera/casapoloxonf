@@ -6,7 +6,6 @@ try:
     from flask import request
     import json
     from flask_sqlalchemy import SQLAlchemy
-    from sqlalchemy.orm import load_only
     from datetime import datetime as DT,timedelta
     from random import choice
     from flask_cors import CORS, cross_origin
@@ -206,18 +205,16 @@ def getData():
             if canFalt  ==0:canFalt=('<d class="text-info">(Completa!)</d>')
             elif canFalt  <0:canFalt =("se pasa por ("+str(canFalt*-1)  +")")
             else:canFalt=('<d class="text-danger">(faltan : '+str(canFalt)+')</d>')
-
+            
             if S  ==0:S  =('<d class="text-info">----------</d>')
             elif S  <0:S =("se pasa por ("+str(S*-1)  +")")
             else:S  =('<d class="text-danger">(faltan : '+str(S)+')</d>')
             if M  ==0:M  =('<d class="text-info">----------</d>')
             elif M  <0:M =("se pasa por ("+str(M*-1)  +")")
             else:M  =('<d class="text-danger">(faltan : '+str(M)+')</d>')
-
             if L  ==0:L  =('<d class="text-info">----------</d>')
             elif L  <0:L =("se pasa por ("+str(L*-1)  +")")
             else:L  =('<d class="text-danger">(faltan : '+str(L)+')</d>')
-
             if XL ==0:XL =('<d class="text-info">----------</d>')
             elif XL  <0:XL =("se pasa por ("+str(XL*-1)  +")")
             else:XL  =('(<d class="text-danger">faltan : '+str(XL)+')</d>')
@@ -296,6 +293,8 @@ def registro():
         except Exception as e:pass
         
         if request.form:
+            
+        
             try:
                 op           =request.form.get("op").upper()
                 referencia   =request.form.get("referencia").upper()
@@ -307,6 +306,7 @@ def registro():
                 cant_tallaXL =request.form.get("cant_tallaXL")
                 cant_tallaXXL=request.form.get("cant_tallaXXL")
                 nota         =request.form.get("nota")
+                
                 if nota =="":nota="No hay notas para este registro"
                 if cant_total   =="":cant_total   =0
                 if cant_tallaS  =="":cant_tallaS  =0
@@ -338,13 +338,18 @@ def registro():
                 if (str(request.form.get("op")))=="None" and (str(request.form.get("referencia")))=="None" and (str(request.form.get("color")))=="None" and (str(request.form.get("cant_total")))=="None":
                     pass
                 else:
-                    db.session.add(prenda)
-                    db.session.commit()
+                    predOP=Prenda.query.filter_by(op=op).first() 
+                    if predOP.op==op:
+                        flash('Esta op ('+str(predOP.op)+') ya existe! con una cantidad total '+str(predOP.cant_total)+' estado '+str(predOP.estado))
+                        pass
+                    else:                        
+                        db.session.add(prenda)
+                        db.session.commit()
 
             except Exception as e:
                 print("Failed to add prenda")
                 print(e)
-  
+
     gdt=getData()
     return render_template("tr.html",dgt=gdt)
 
@@ -449,7 +454,8 @@ def update():
         prend.rM  = cant_tallaMnew
         prend.rL  = cant_tallaLnew
         prend.rXL = cant_tallaXLnew
-        prend.rXXL= cant_tallaXXLnew              
+        prend.rXXL= cant_tallaXXLnew
+        prend.nota= notanew              
         #notas = Prenda.query.filter_by(nota=notaold).first()
         #for row in notas:
          #   print(row.nota)
