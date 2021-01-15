@@ -6,6 +6,7 @@ try:
     from flask import request
     import json
     from flask_sqlalchemy import SQLAlchemy
+    from sqlalchemy.orm import load_only
     from datetime import datetime as DT,timedelta
     from random import choice
     from flask_cors import CORS, cross_origin
@@ -67,6 +68,7 @@ class Operacion(db.Model):
     fecha         = db.Column(db.DateTime)
     id_talla      = db.Column(db.Integer)
     can_terminada = db.Column(db.Integer)
+    can_resta     = db.Column(db.Integer)
 
     def __repr__(self):
         return "<Title: {}>".format(self.id_operacion)
@@ -81,7 +83,8 @@ db.create_all()
 def ct(id_prenda):
     operacion = db.engine.execute('select * from operacion where id_prenda ={};'.format(int(id_prenda)))
     sumaTotal = db.engine.execute('select sum(can_terminada) as suma from operacion where id_prenda ={};'.format(id_prenda))
-    
+    sumaTotalR =db.engine.execute('select sum(can_resta) as sumaR from operacion where id_prenda ={};'.format(id_prenda))
+
     sct=()
     ct=()
     fec=()
@@ -99,8 +102,9 @@ def ct(id_prenda):
         lfec=list(fec)
         lfec.append(row.fecha)
         fec=tuple(lfec)
-        tallas = db.engine.execute('select nom_talla from talla where id_talla ={};'.format(row.id_talla))
-        tallasT=db.engine.execute('select sum(can_terminada) as tallTT from operacion where id_prenda ={} AND id_talla={};'.format(row.id_prenda,row.id_talla))
+        tallas   = db.engine.execute('select nom_talla from talla where id_talla ={};'.format(row.id_talla))
+        tallasT  = db.engine.execute('select sum(can_terminada) as tallTT from operacion where id_prenda ={} AND id_talla={};'.format(row.id_prenda,row.id_talla))
+        tallasTR = db.engine.execute('select sum(can_resta) as tallTR from operacion where id_prenda ={} AND id_talla={};'.format(row.id_prenda,row.id_talla))
         ts=''
         tm=''
         tl=''
@@ -112,23 +116,31 @@ def ct(id_prenda):
             tll = tuple(ltll)
             for roww in tallasT:
                 ltllT=list(tllT)
-                ltllT.append("<br>"+str(row.nom_talla)+" ="+str(roww.tallTT)+"")
-                tllT = tuple(set(ltllT))
+                for rowww in tallasTR:
+                    if roww.tallTT-rowww.tallTR ==0:pass
+                    else:
+                        ltllT.append("<br>"+str(row.nom_talla)+"="+str(roww.tallTT-rowww.tallTR)+"")
+                        tllT = tuple(set(ltllT))
                               
     for row in sumaTotal:
-        if row.suma==None:
-            rt=int(0)
-        lsct = list(sct)
-        lsct.append(row.suma)
-        sct=tuple(lsct)
-        try:
-            rt=int(row.suma)
-        except Exception as e:
-            pass
-    #print (tllT)
+        for roww in sumaTotalR:
+            lsct = list(sct)
+            if row.suma==None:
+                rt=int(0)          
+            if roww.sumaR ==None and row.suma==None :pass
+            else:
+                lsct.append(int(row.suma)-int(roww.sumaR))
+                sct=tuple(lsct)
+                try:
+                    rt=int(row.suma-roww.sumaR)
+                except Exception as e:
+                    pass
+    
     return {'ct':ct,'tll':tll,'tllT':tllT,'fecp':fec,'sct':sct,'rt':rt,'idop':idop}
 
-
+def vacio(vacio):
+    if vacio==0:return ''
+    else:return vacio
 # ======================
 #   Allow Cross Origin
 # ======================
@@ -186,26 +198,37 @@ def getData():
             L  =row.rL
             XL =row.rXL
             XXL=row.rXXL
+            if type(S)==str:S=0
+            if type(M)==str:M=0
+            if type(L)==str:L=0
+            if type(XL)==str:XL=0
+            if type(XXL)==str:XXL=0
             if canFalt  ==0:canFalt=('<d class="text-info">(Completa!)</d>')
             elif canFalt  <0:canFalt =("se pasa por ("+str(canFalt*-1)  +")")
             else:canFalt=('<d class="text-danger">(faltan : '+str(canFalt)+')</d>')
 
-            if S  ==0:S  =('<d class="text-info">(Completa!)</d>')
+            if S  ==0:S  =('<d class="text-info">----------</d>')
             elif S  <0:S =("se pasa por ("+str(S*-1)  +")")
             else:S  =('<d class="text-danger">(faltan : '+str(S)+')</d>')
-            if M  ==0:M  =('<d class="text-info">(Completa!)</d>')
+            if M  ==0:M  =('<d class="text-info">----------</d>')
             elif M  <0:M =("se pasa por ("+str(M*-1)  +")")
             else:M  =('<d class="text-danger">(faltan : '+str(M)+')</d>')
-            if L  ==0:L  =('<d class="text-info">(Completa!)</d>')
+
+            if L  ==0:L  =('<d class="text-info">----------</d>')
             elif L  <0:L =("se pasa por ("+str(L*-1)  +")")
             else:L  =('<d class="text-danger">(faltan : '+str(L)+')</d>')
-            if XL ==0:XL =('<d class="text-info">(Completa!)</d>')
+
+            if XL ==0:XL =('<d class="text-info">----------</d>')
             elif XL  <0:XL =("se pasa por ("+str(XL*-1)  +")")
-            else:XL  =('<d class="text-danger">(faltan : '+str(XL)+')</d>')
-            if XXL==0:XXL=('<d class="text-info">(Completa!)</d>')
+            else:XL  =('(<d class="text-danger">faltan : '+str(XL)+')</d>')
+            if XXL==0:XXL=('<d class="text-info">----------</d>')
             elif XXL  <0:XXL =("se pasa por ("+str(XXL*-1)  +")")
             else:XXL  =('<d class="text-danger">(faltan : '+str(XXL)+')</d>')
-
+            if type(row.cant_tallaS)==str:row.cant_tallaS=0
+            if type(row.cant_tallaM)==str:row.cant_tallaM=0
+            if type(row.cant_tallaL)==str:row.cant_tallaL=0
+            if type(row.cant_tallaXL)==str:row.cant_tallaXL=0
+            if type(row.cant_tallaXXL)==str:row.cant_tallaXXL=0
             TT = int(row.cant_tallaS)+int(row.cant_tallaM)+int(row.cant_tallaL)+int(row.cant_tallaXL)+int(row.cant_tallaXXL)
             X  = row.cant_total-ct(row.id_prenda)['rt']
             
@@ -225,11 +248,11 @@ def getData():
           "cantidadTotal": "{}".format(row.cant_total),
           "fecha": "{}".format(row.fecha),
           "canTerminada":ct(row.id_prenda)['ct'],
-          "tallaSS": "{}".format(row.cant_tallaS),
-          "tallaM": "{}".format(row.cant_tallaM),
-          "tallaL": "{}".format(row.cant_tallaL),
-          "tallaXL": "{}".format(row.cant_tallaXL),
-          "tallaXXL": "{}".format(row.cant_tallaXXL),
+          "tallaSS": "{}".format(vacio(row.cant_tallaS)),
+          "tallaM": "{}".format(vacio(row.cant_tallaM)),
+          "tallaL": "{}".format(vacio(row.cant_tallaL)),
+          "tallaXL": "{}".format(vacio(row.cant_tallaXL)),
+          "tallaXXL": "{}".format(vacio(row.cant_tallaXXL)),
           "rS": "{}".format(S),
           "rM": "{}".format(M),
           "rL": "{}".format(L),
@@ -304,7 +327,7 @@ def registro():
                 rM  =cant_tallaM,
                 rL  =cant_tallaL,
                 rXL =cant_tallaXL,
-                rXXL=cant_tallaXXL,                
+                rXXL=cant_tallaXXL,
                 nota = request.form.get("nota"),
                 estado=request.form.get("estado"),
                 fecha = dt)
@@ -331,27 +354,40 @@ def operacion():
     else:
         if request.form:
             try:
-                restar=request.form.get("restar")
-                print(restar)
-                id_talla=request.form.get("id_talla")
                 can_terminada = request.form.get("can_terminada")
-                resta = Prenda.query.filter_by(id_prenda=request.form.get("id_prenda")).first()
-                if id_talla=='1':resta.rS=(resta.rS-int(can_terminada))
-                if id_talla=='2':resta.rM=(resta.rM-int(can_terminada))
-                if id_talla=='3':resta.rL=(resta.rL-int(can_terminada))
-                if id_talla=='4':resta.rXL=(resta.rXL-int(can_terminada))
-                if id_talla=='5':resta.rXXL=(resta.rXXL-int(can_terminada))
+                id_talla      = request.form.get("id_talla")
+                prenda        = Prenda.query.filter_by(id_prenda=request.form.get("id_prenda")).first()
+                decremt       = request.form.get("resta")
+#                oper          = Operacion.query.filter_by(id_prenda=request.form.get("id_prenda")).first()
+                
+                if str(decremt)=="resta":
+                    can_resta     = request.form.get("can_terminada")
+                    can_terminada = 0
+                    if id_talla=='1':prenda.rS  =(prenda.rS+int(can_resta))
+                    if id_talla=='2':prenda.rM  =(prenda.rM+int(can_resta))
+                    if id_talla=='3':prenda.rL  =(prenda.rL+int(can_resta))
+                    if id_talla=='4':prenda.rXL =(prenda.rXL+int(can_resta))
+                    if id_talla=='5':prenda.rXXL=(prenda.rXXL+int(can_resta))
 
-                operacion     = Operacion(fecha         =dt,
-                                          id_prenda     =request.form.get("id_prenda"),
-                                          can_terminada = request.form.get("can_terminada"),
-                                          id_talla      = request.form.get("id_talla"))        
-
-                if (str(request.form.get("can_terminada")))=="Seleccione Talla" or (str(request.form.get("can_terminada")))=="None" or (str(request.form.get("can_terminada")))=="" or (str(request.form.get("id_prenda")))=="None":
-                    pass
                 else:
-                    db.session.add(resta)
-                    db.session.add(operacion)
+                    can_terminada = request.form.get("can_terminada")
+                    can_resta     = 0
+                    if id_talla=='1':prenda.rS  =(prenda.rS-int(can_terminada))
+                    if id_talla=='2':prenda.rM  =(prenda.rM-int(can_terminada))
+                    if id_talla=='3':prenda.rL  =(prenda.rL-int(can_terminada))
+                    if id_talla=='4':prenda.rXL =(prenda.rXL-int(can_terminada))
+                    if id_talla=='5':prenda.rXXL=(prenda.rXXL-int(can_terminada))
+
+                operacion     = Operacion(fecha     =dt,
+                                   id_prenda     = request.form.get("id_prenda"),
+                                   can_terminada = can_terminada,
+                                   can_resta     = can_resta,
+                                   id_talla      = request.form.get("id_talla"))        
+
+                if (str(request.form.get("can_terminada")))=="Seleccione Talla" or (str(request.form.get("can_terminada")))=="None" or (str(request.form.get("can_terminada")))=="" or (str(request.form.get("id_prenda")))=="None":pass
+                else:pass
+                db.session.add(prenda)
+                db.session.add(operacion)
                 db.session.commit()
 
             except Exception as e:
@@ -366,6 +402,7 @@ def operacion():
 @app.route("/update", methods=["POST"])
 def update():
     try:
+        id_prenda   = request.form.get("id_prenda")
         opnew=request.form.get("op").upper()
         referencianew = request.form.get("referencia").upper()
         id_colornew   = request.form.get("color")
@@ -396,34 +433,22 @@ def update():
         cant_tallaXLold = request.form.get("cant_tallaXLold")
         cant_tallaXXLold = request.form.get("cant_tallaXXLold")
         notaold = request.form.get("notaold")
-        
-        operacion = Prenda.query.filter_by(op=opold).first()
-        operacion.op = str(opnew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
 
-        referencia = Prenda.query.filter_by(referencia=referenciaold).first()
-        operacion.referencia = str(referencianew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
-
-        color = Prenda.query.filter_by(id_color=id_colorold).first()
-        color.id_color = str(id_colornew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
-
-        canTotal = Prenda.query.filter_by(cant_total=cantidadTotalold).first()
-        canTotal.cant_total = str(cant_totalnew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
-
-        canTallaS = Prenda.query.filter_by(cant_tallaS=cant_tallaSold).first()
-        canTallaS.cant_tallaS = str(cant_tallaSnew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
-
-        canTallaM = Prenda.query.filter_by(cant_tallaM=cant_tallaMold).first()
-        canTallaM.cant_tallaM = str(cant_tallaMnew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
-
-        canTallaL = Prenda.query.filter_by(cant_tallaL=cant_tallaLold).first()
-        canTallaL.cant_tallaL = str(cant_tallaLnew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
-
-        canTallaXL = Prenda.query.filter_by(cant_tallaXL=cant_tallaXLold).first()
-        canTallaXL.cant_tallaXL = str(cant_tallaXLnew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
-
-        canTallaXXL = Prenda.query.filter_by(cant_tallaXXL=cant_tallaXXLold).first()
-        canTallaXXL.cant_tallaXXL = str(cant_tallaXXLnew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
-
+        prend    = Prenda.query.filter_by(id_prenda=id_prenda).first()
+        prend.op = opnew
+        prend.referencia    = referencianew
+        prend.id_color      = id_colornew
+        prend.cant_total    = cant_totalnew
+        prend.cant_tallaS   = cant_tallaSnew
+        prend.cant_tallaM   = cant_tallaMnew
+        prend.cant_tallaL   = cant_tallaLnew
+        prend.cant_tallaXL  = cant_tallaXLnew
+        prend.cant_tallaXXL = cant_tallaXXLnew
+        prend.rS  = cant_tallaSnew
+        prend.rM  = cant_tallaMnew
+        prend.rL  = cant_tallaLnew
+        prend.rXL = cant_tallaXLnew
+        prend.rXXL= cant_tallaXXLnew              
         #notas = Prenda.query.filter_by(nota=notaold).first()
         #for row in notas:
          #   print(row.nota)
