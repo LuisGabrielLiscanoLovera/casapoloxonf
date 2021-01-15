@@ -233,10 +233,10 @@ def getData():
             X  = row.cant_total-ct(row.id_prenda)['rt']
             
             if X <= 0:
-                estado='<p class="text-success">Cerrado</p>'
+                estado='<p class="h6 text-success">Cerrado</p>'
                 opD='<p class="text-success">'+row.op+'</p>'
             else:
-                estado='<p class="text-info">Abierto</p>'
+                estado='<p class="h6 text-info">Abierto</p>'
                 opD='<p class="text-info">'+row.op+'</p>'
             datas['data'].append({
           "id_pr":"{}".format(int(row.id_prenda)),
@@ -306,7 +306,8 @@ def registro():
                 cant_tallaL  =request.form.get("cant_tallaL")
                 cant_tallaXL =request.form.get("cant_tallaXL")
                 cant_tallaXXL=request.form.get("cant_tallaXXL")
-
+                nota         =request.form.get("nota")
+                if nota =="":nota="No hay notas para este registro"
                 if cant_total   =="":cant_total   =0
                 if cant_tallaS  =="":cant_tallaS  =0
                 if cant_tallaM  =="":cant_tallaM  =0
@@ -328,7 +329,7 @@ def registro():
                 rL  =cant_tallaL,
                 rXL =cant_tallaXL,
                 rXXL=cant_tallaXXL,
-                nota = request.form.get("nota"),
+                nota = nota,
                 estado=request.form.get("estado"),
                 fecha = dt)
                 

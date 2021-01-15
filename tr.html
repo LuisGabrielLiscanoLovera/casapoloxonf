@@ -478,11 +478,11 @@ function format ( d ) {
         '<input type="hidden" value="'+d.id_operacion+'" name="id_op">'+
         '<button type="submit"   class="btn btn btn-outline-danger btn-rounded mb-2" ><i class="far fa-trash-alt" aria-hidden="true"></i></button>'+
         '</form></div>'+
-        '<div><hr>'+
-        //'<button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="left" title="'+d.nota+'">Nota</button>'+
-        
-        '<div class=" " style="width: 7rem;height: 3rem;" "><h6>Estado:'+d.estado+'</h6></div></div></div>'+
-        '</div>';
+        '<hr>'+'<div class="row" >'+
+        '<div class="col-sm">Estado: '+d.estado+'</div>'+
+        '<div class="col-sm"></div>'+
+        '<div class="col-sm"><a class="btn btn-outline-dark text-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="top"  title="'+d.nota+'">Nota</a</div>'+
+        '</div></div></div>';
 }
 /*
         
@@ -502,7 +502,7 @@ $(document).ready(function() {
             'zeroRecords': '<div class="spinner-border text-success" role="status"><span class="sr-only">Loading...</span></div>',
             "info": " Mostrar por pagina _PAGE_ of _PAGES_",
             "infoEmpty": " No hay datos disponible",
-            "infoFiltered": "(filtrado de  _MAX_ regstro t5atal)"
+            "infoFiltered": "(filtrado de  _MAX_ regstro total)"
         },
         "processing": false,
         "serverSide": false,
