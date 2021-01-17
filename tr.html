@@ -27,6 +27,14 @@
     <title>Sistema Casa de Polo</title>
   </head>
         <style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+
+<link href='https://fonts.googleapis.com/css?family=Rock+Salt' rel='stylesheet' type='text/css'>
+    <meta charset=utf-8 />
+    <title>Sistema Casa de Polo</title>
+  <
+/head>
+        <style>
 
 .styled-table thead tr {
     background-color: #009879;
@@ -388,9 +396,9 @@ tr.shown td.details-control {
 
      
 
-<table id="example" class="table table-striped responstable styled-table table-sm"  cellspacing="0" width="100%">
+<table id="example" class="table border-dark table-bordered table-hover table-sm"  cellspacing="0" width="100%">
         <thead>
-            <tr>
+            <tr class="p-3 mb-2 bg-info text-white">
                 <th></th>
                 <th>Operacion <i class="icofont-atom"></i></th>
                 <th>Referencia  <i class="icofont-brand-appstore"></i></th>
@@ -400,7 +408,7 @@ tr.shown td.details-control {
             </tr>
         </thead>
         <tfoot>
-            <tr>
+            <tr class="p-3 mb-2 bg-light text-white">
                 <th></th>
                 <th>OP</th>
                 <th>Referencia</th>
@@ -423,7 +431,7 @@ function format ( d ) {
 //});
     return'<div class="row"><div class="col-3">'+
         '<form method="POST" action="/operacion"><div class="form-group"><center><label class="form-group">'+
-        '<h6 class="modal-title w-100 font-weight-bold ">Registar Tarea</h6></label></center>'+
+        '<h6 class="modal-title w-100 font-weight-bold text-decoration-underline ">Registar Tarea</h6></label></center>'+
         '<div class=" "><select class="form-control-sm custom-select" name="id_talla"><option selected>Seleccione Talla</option><option value="1">Talla S</option><option value="2">Talla M</option> <option value="3">Talla L</option><option value="4">Talla XL</option><option value="5">Talla XXL</option></select></div>'+
         '<div class="  "><input type="number" class="form-control" id="tsid'+d.op+
         '1" name="can_terminada" aria-describedby="number" placeholder="cantidad"></div>'+
@@ -436,8 +444,8 @@ function format ( d ) {
 
         '<div class=""><button class="btn btn-outline-info form-group" type="submit" >Guardar</button></div></div>'+
         '</form></div>'+
-        '<div class="col-3 border">'+
-        '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Talla Total</h6></center>'+
+        '<div class="col-3 border rounded">'+
+        '<center><h6 class="modal-title w-100 font-weight-bold text-decoration-underline">Cantidad Talla Total</h6></center>'+
         '<div class="row " >'+
         '<div class="col-sm-4">'+
         '<br>S    :' +d.tallaSS   +
@@ -459,13 +467,13 @@ function format ( d ) {
         '<br>Cantidad '+d.canFaltante+
         '</div>'+
         '<div class="col-3">'+
-        '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Registrada '+d.total+' </h6></center><br>'+
+        '<center><h6 class="modal-title w-100 font-weight-bold text-decoration-underline">Cantidad Registrada '+d.total+' </h6></center><br>'+
         
         'Prendas '+d.tallaS+
         '<br>'+
                 
         '</div><div class="col-3">'+
-        '<center><h6 class="modal-title w-100 font-weight-bold">Accion</h6></center>'+
+        '<center><h6 class="modal-title w-100 font-weight-bold text-decoration-underline">Accion</h6></center>'+
         '<div class="container my-4"><div class="modal fade" id="modalSubscriptionFor" tabindex="-1" role="dialog" aria-labelledby="myModalLabe" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header text-center"><h4 class="modal-title w-100 font-weight-bold text-muted ms-5">Editar registro Polo</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
         '</div><div class="modal-body mx-6">'+
         '<form  method="POST" action="./update">'+
@@ -512,7 +520,7 @@ function format ( d ) {
         '<hr>'+'<div class="row" >'+
         '<div class="col-sm">Estado: '+d.estado+'</div>'+
         '<div class="col-sm"></div>'+
-        '<div class="col-sm"><a class="btn-outline text-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="top"  title="'+d.nota+'">Nota</a></div>'+
+        '<div class="col-sm"><a class="border border-dark btn-outline text-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="top"  title="'+d.nota+'">Nota</a></div>'+
         '</div></div></div>';
 }
 /*
@@ -537,6 +545,7 @@ if ( window.history.replaceState ) {
 $(document).ready(function() {
   
     var dt = $('#example').DataTable( {
+        
         "language": {
             "search":'Buscar: ',
             "lengthMenu": " Mostrar _MENU_ registro por paguina",
@@ -551,6 +560,7 @@ $(document).ready(function() {
             "url": "/data",
             "type": "GET"
         },
+        
         "columns": [ 
             {
                 "class":          "details-control",
