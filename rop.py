@@ -202,24 +202,24 @@ def getData():
             if type(L)==str:L=0
             if type(XL)==str:XL=0
             if type(XXL)==str:XXL=0
-            if canFalt  ==0:canFalt=('<d class="text-info">(Completa!)</d>')
-            elif canFalt  <0:canFalt =("se pasa por ("+str(canFalt*-1)  +")")
-            else:canFalt=('<d class="text-danger">(faltan : '+str(canFalt)+')</d>')
+            if canFalt  ==0:canFalt=('<d class="text-info">(Completa!) <i class="icofont-verification-check"></i></d>')
+            elif canFalt  <0:canFalt =("<d> Se pasa por ("+str(canFalt*-1)  +")"+'<i class="icofont-exclamation"></i></d>')   
+            else:canFalt=('<d class="text-danger">(faltan : '+str(canFalt)+') <i class="icofont-error"></i></d>')
             if S  ==0:S  =('<d class="text-info">----------</d>')
-            elif S  <0:S =("se pasa por ("+str(S*-1)  +")")
-            else:S  =('<d class="text-danger">(faltan : '+str(S)+')</d>')
+            elif S  <0:S =("<d> Se pasa por ("+str(S*-1)  +")"+'<i class="icofont-exclamation"></i></d>')
+            else:S  =('<d class="text-danger">(faltan : '+str(S)+') <i class="icofont-error"></i></d>')
             if M  ==0:M  =('<d class="text-info">----------</d>')
-            elif M  <0:M =("se pasa por ("+str(M*-1)  +")")
-            else:M  =('<d class="text-danger">(faltan : '+str(M)+')</d>')
+            elif M  <0:M =("<d> Se pasa por ("+str(M*-1)  +")"+'<i class="icofont-exclamation"></i></d>')
+            else:M  =('<d class="text-danger">(faltan : '+str(M)+') <i class="icofont-error"></i></d>')
             if L  ==0:L  =('<d class="text-info">----------</d>')
-            elif L  <0:L =("se pasa por ("+str(L*-1)  +")")
-            else:L  =('<d class="text-danger">(faltan : '+str(L)+')</d>')
+            elif L  <0:L =("<d> Se pasa por ("+str(L*-1)  +")"+'<i class="icofont-exclamation"></i></d>')
+            else:L  =('<d class="text-danger">(faltan : '+str(L)+') <i class="icofont-error"></i></d>')
             if XL ==0:XL =('<d class="text-info">----------</d>')
-            elif XL  <0:XL =("se pasa por ("+str(XL*-1)  +")")
-            else:XL  =('<d class="text-danger">(faltan : '+str(XL)+')</d>')
+            elif XL  <0:XL =("<d> Se pasa por ("+str(XL*-1)  +")"+'<i class="icofont-exclamation"></i></d>')
+            else:XL  =('<d class="text-danger">(faltan : '+str(XL)+') <i class="icofont-error"></i></d>')
             if XXL==0:XXL=('<d class="text-info">----------</d>')
-            elif XXL  <0:XXL =("se pasa por ("+str(XXL*-1)  +")")
-            else:XXL  =('<d class="text-danger">(faltan : '+str(XXL)+')</d>')
+            elif XXL  <0:XXL =("<d> Se pasa por ("+str(XXL*-1)  +")"+'<i class="icofont-exclamation"></i></d>')
+            else:XXL  =('<d class="text-danger">(faltan : '+str(XXL)+') <i class="icofont-error"></i></d>')
             if type(row.cant_tallaS)==str:row.cant_tallaS=0
             if type(row.cant_tallaM)==str:row.cant_tallaM=0
             if type(row.cant_tallaL)==str:row.cant_tallaL=0
@@ -232,12 +232,12 @@ def getData():
             if X <= 0:
                 Prenda.query.filter_by(id_prenda=row.id_prenda).first().estado = 'Cerrado'
                 db.session.commit()
-                estado='<p class="h6 text-success">Cerrado</p>'
+                estado='<d class="h6 text-success">Cerrado<i class="icofont-minus-circle"></i></d>'
                 opD='<d class="text-success">'+str(i)+') '+str(row.op)+'</d>'
             else:
                 Prenda.query.filter_by(id_prenda=row.id_prenda).first().estado = 'Abierto'
                 db.session.commit()
-                estado='<p class="h6 text-info">Abierto</p>'
+                estado='<d class="h6 text-info">Abierto<i class="icofont-automation"></i></d>'
                 opD='<d class="text-info">'+str(i)+') '+str(row.op)+'</d>'
             datas['data'].append({
           "id_pr":"{}".format(int(row.id_prenda)),
