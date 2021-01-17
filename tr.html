@@ -384,7 +384,7 @@ tr.shown td.details-control {
 </div></div>
 
 <div class="text-center">
-  <a href="" class="btn btn-outline-blue btn-rounded mb-4" data-toggle="modal" data-target="#modalSubscriptionForm">Agregar Operacion <i class="icofont-database-add"></i></a></div>
+  <a href="" class="btn btn-outline-blue btn-rounded mb-4" data-toggle="modal" data-target="#modalSubscriptionForm">Agregar Operacion <i class="icofont-ui-add"></i></a></div>
 
      
 
@@ -392,11 +392,11 @@ tr.shown td.details-control {
         <thead>
             <tr>
                 <th></th>
-                <th>OP</th>
-                <th>Referencia</th>
-                <th>Cantidad total</th>
-                <th>Color</th>
-                <th>Fecha</th>
+                <th>Operacion <i class="icofont-atom"></i></th>
+                <th>Referencia  <i class="icofont-brand-appstore"></i></th>
+                <th>Cantidad total <i class="icofont-ui-calculator"></i></th>
+                <th>Color  <i class="icofont-color-bucket"></i></th>
+                <th>Fecha  <i class="icofont-clock-time"></i></th>
             </tr>
         </thead>
         <tfoot>
@@ -436,9 +436,9 @@ function format ( d ) {
 
         '<div class=""><button class="btn btn-outline-info form-group" type="submit" >Guardar</button></div></div>'+
         '</form></div>'+
-        '<div class="col-3">'+
+        '<div class="col-3 border">'+
         '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Talla Total</h6></center>'+
-        '<div class="row" >'+
+        '<div class="row " >'+
         '<div class="col-sm-4">'+
         '<br>S    :' +d.tallaSS   +
         '<br>M    :' +d.tallaM    +
@@ -461,7 +461,7 @@ function format ( d ) {
         '<div class="col-3">'+
         '<center><h6 class="modal-title w-100 font-weight-bold">Cantidad Registrada '+d.total+' </h6></center><br>'+
         
-        'Tallas'+d.tallaS+
+        'Prendas '+d.tallaS+
         '<br>'+
                 
         '</div><div class="col-3">'+
@@ -542,7 +542,7 @@ $(document).ready(function() {
             "lengthMenu": " Mostrar _MENU_ registro por paguina",
             'zeroRecords': '<div class="spinner-border text-success" role="status"><span class="sr-only">Loading...</span></div>',
             "info": " Mostrar por pagina _PAGE_ of _PAGES_",
-            "infoEmpty": " No hay datos disponible",
+            "infoEmpty": " Cargando datos disponible...",
             "infoFiltered": "(filtrado de  _MAX_ regstro total)"
         },
         "processing": false,

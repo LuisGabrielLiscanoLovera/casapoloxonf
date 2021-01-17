@@ -6,6 +6,7 @@ try:
     from flask import request
     import json
     from flask_sqlalchemy import SQLAlchemy
+    from sqlalchemy.orm import load_only
     from datetime import datetime as DT,timedelta
     from random import choice
     from flask_cors import CORS, cross_origin
@@ -128,7 +129,7 @@ def ct(id_prenda):
                 rt=int(0)          
             if roww.sumaR ==None and row.suma==None :pass
             else:
-                lsct.append('[ '+str(int(row.suma)-int(roww.sumaR))+' ]')
+                lsct.append(int(row.suma)-int(roww.sumaR))
                 sct=tuple(lsct)
                 try:
                     rt=int(row.suma-roww.sumaR)
@@ -154,7 +155,7 @@ def login():
     if not registered_user is None:
         session['logged_in'] = True
     else:
-        flash('Usuario o Clave incorrecto!')
+        flash('wrong password!')
     return home()
 
 # Signup page
@@ -187,11 +188,11 @@ def getData():
         L=0
         XL=0
         XXL=0
-        i=0
         for row  in prenda:
             row.op=row.op.upper()
             row.referencia=row.referencia.upper()
             canFalt=row.cant_total-ct(row.id_prenda)['rt']
+           
             S  =row.rS
             M  =row.rM
             L  =row.rL
@@ -202,24 +203,27 @@ def getData():
             if type(L)==str:L=0
             if type(XL)==str:XL=0
             if type(XXL)==str:XXL=0
-            if canFalt  ==0:canFalt=('<d class="text-info">(Completa!) <i class="icofont-verification-check"></i></d>')
-            elif canFalt  <0:canFalt =("<d> Se pasa por ("+str(canFalt*-1)  +")"+'<i class="icofont-exclamation"></i></d>')   
-            else:canFalt=('<d class="text-danger">(faltan : '+str(canFalt)+') <i class="icofont-error"></i></d>')
+            if canFalt  ==0:canFalt=('<d class="text-info">(Completa!)</d>')
+            elif canFalt  <0:canFalt =("se pasa por ("+str(canFalt*-1)  +")")
+            else:canFalt=('<d class="text-danger">(faltan : '+str(canFalt)+')</d>')
+
             if S  ==0:S  =('<d class="text-info">----------</d>')
-            elif S  <0:S =("<d> Se pasa por ("+str(S*-1)  +")"+'<i class="icofont-exclamation"></i></d>')
-            else:S  =('<d class="text-danger">(faltan : '+str(S)+') <i class="icofont-error"></i></d>')
+            elif S  <0:S =("se pasa por ("+str(S*-1)  +")")
+            else:S  =('<d class="text-danger">(faltan : '+str(S)+')</d>')
             if M  ==0:M  =('<d class="text-info">----------</d>')
-            elif M  <0:M =("<d> Se pasa por ("+str(M*-1)  +")"+'<i class="icofont-exclamation"></i></d>')
-            else:M  =('<d class="text-danger">(faltan : '+str(M)+') <i class="icofont-error"></i></d>')
+            elif M  <0:M =("se pasa por ("+str(M*-1)  +")")
+            else:M  =('<d class="text-danger">(faltan : '+str(M)+')</d>')
+
             if L  ==0:L  =('<d class="text-info">----------</d>')
-            elif L  <0:L =("<d> Se pasa por ("+str(L*-1)  +")"+'<i class="icofont-exclamation"></i></d>')
-            else:L  =('<d class="text-danger">(faltan : '+str(L)+') <i class="icofont-error"></i></d>')
+            elif L  <0:L =("se pasa por ("+str(L*-1)  +")")
+            else:L  =('<d class="text-danger">(faltan : '+str(L)+')</d>')
+
             if XL ==0:XL =('<d class="text-info">----------</d>')
-            elif XL  <0:XL =("<d> Se pasa por ("+str(XL*-1)  +")"+'<i class="icofont-exclamation"></i></d>')
-            else:XL  =('<d class="text-danger">(faltan : '+str(XL)+') <i class="icofont-error"></i></d>')
+            elif XL  <0:XL =("se pasa por ("+str(XL*-1)  +")")
+            else:XL  =('(<d class="text-danger">faltan : '+str(XL)+')</d>')
             if XXL==0:XXL=('<d class="text-info">----------</d>')
-            elif XXL  <0:XXL =("<d> Se pasa por ("+str(XXL*-1)  +")"+'<i class="icofont-exclamation"></i></d>')
-            else:XXL  =('<d class="text-danger">(faltan : '+str(XXL)+') <i class="icofont-error"></i></d>')
+            elif XXL  <0:XXL =("se pasa por ("+str(XXL*-1)  +")")
+            else:XXL  =('<d class="text-danger">(faltan : '+str(XXL)+')</d>')
             if type(row.cant_tallaS)==str:row.cant_tallaS=0
             if type(row.cant_tallaM)==str:row.cant_tallaM=0
             if type(row.cant_tallaL)==str:row.cant_tallaL=0
@@ -227,18 +231,13 @@ def getData():
             if type(row.cant_tallaXXL)==str:row.cant_tallaXXL=0
             TT = int(row.cant_tallaS)+int(row.cant_tallaM)+int(row.cant_tallaL)+int(row.cant_tallaXL)+int(row.cant_tallaXXL)
             X  = row.cant_total-ct(row.id_prenda)['rt']
-            i=i+1
             
             if X <= 0:
-                Prenda.query.filter_by(id_prenda=row.id_prenda).first().estado = 'Cerrado'
-                db.session.commit()
-                estado='<d class="h6 text-success">Cerrado<i class="icofont-minus-circle"></i></d>'
-                opD='<d class="text-success">'+str(i)+') '+str(row.op)+'</d>'
+                estado='<p class="h6 text-success">Cerrado</p>'
+                opD='<p class="text-success">'+row.op+'</p>'
             else:
-                Prenda.query.filter_by(id_prenda=row.id_prenda).first().estado = 'Abierto'
-                db.session.commit()
-                estado='<d class="h6 text-info">Abierto<i class="icofont-automation"></i></d>'
-                opD='<d class="text-info">'+str(i)+') '+str(row.op)+'</d>'
+                estado='<p class="h6 text-info">Abierto</p>'
+                opD='<p class="text-info">'+row.op+'</p>'
             datas['data'].append({
           "id_pr":"{}".format(int(row.id_prenda)),
           "id_operacion":ct(int(row.id_prenda))['idop'],
@@ -285,7 +284,7 @@ def registro():
     if 1==5:#not session.get("logged_in"):
         return render_template("login.html")
     else:#dt=str(dt[:-7])))
-
+        
         try:
             db.engine.execute("insert into users values(1,'admin','ccidbcomputacion@gmail.com','admin','3117569482');")
             db.engine.execute("insert into talla values(1,'S');")
@@ -295,9 +294,8 @@ def registro():
             db.engine.execute("insert into talla values(5,'XXL');")
             db.engine.execute("insert into talla values(6,'Punto');")
         except Exception as e:pass
-
+        
         if request.form:
-
             try:
                 op           =request.form.get("op").upper()
                 referencia   =request.form.get("referencia").upper()
@@ -309,7 +307,6 @@ def registro():
                 cant_tallaXL =request.form.get("cant_tallaXL")
                 cant_tallaXXL=request.form.get("cant_tallaXXL")
                 nota         =request.form.get("nota")
-
                 if nota =="":nota="No hay notas para este registro"
                 if cant_total   =="":cant_total   =0
                 if cant_tallaS  =="":cant_tallaS  =0
@@ -335,22 +332,19 @@ def registro():
                 nota = nota,
                 estado=request.form.get("estado"),
                 fecha = dt)
-
+                
                 if (str(request.form.get("op")))=="None" and (str(request.form.get("referencia")))=="None" and (str(request.form.get("color")))=="None" and (str(request.form.get("cant_total")))=="None" and (str(request.form.get("cant_tallaS")))=="None" and (str(request.form.get("cant_tallaM")))=="None" and (str(request.form.get("cant_tallaL")))=="None" and (str(request.form.get("cant_tallaXL")))=="None" and (str(request.form.get("cant_tallaXXL")))=="None" and (str(request.form.get("cant_nota")))=="None" and (str(request.form.get("estado")))=="None":
                     pass
                 if (str(request.form.get("op")))=="None" and (str(request.form.get("referencia")))=="None" and (str(request.form.get("color")))=="None" and (str(request.form.get("cant_total")))=="None":
                     pass
                 else:
-                    predOP=Prenda.query.filter_by(op=op).first()
-                    if predOP==None:
-                        db.session.add(prenda)
-                        db.session.commit()
-                    else:
-                        if predOP.op==op:flash('Esta op ('+str(predOP.op)+') ya existe! con una cantidad total '+str(predOP.cant_total)+' estado '+str(predOP.estado))
+                    db.session.add(prenda)
+                    db.session.commit()
+
             except Exception as e:
                 print("Failed to add prenda")
                 print(e)
-
+  
     gdt=getData()
     return render_template("tr.html",dgt=gdt)
 
@@ -385,7 +379,7 @@ def operacion():
                     if id_talla=='4':prenda.rXL =(prenda.rXL-int(can_terminada))
                     if id_talla=='5':prenda.rXXL=(prenda.rXXL-int(can_terminada))
 
-                operacion     = Operacion(fecha  =dt,
+                operacion     = Operacion(fecha     =dt,
                                    id_prenda     = request.form.get("id_prenda"),
                                    can_terminada = can_terminada,
                                    can_resta     = can_resta,
@@ -398,7 +392,7 @@ def operacion():
                 db.session.commit()
 
             except Exception as e:
-                flash('error en la operacion')
+                print("Failed to add operacion")
                 print(e)
   
     return redirect(url_for('registro'))
@@ -420,15 +414,26 @@ def update():
         cant_tallaXLnew = request.form.get("cant_tallaXL")
         cant_tallaXXLnew = request.form.get("cant_tallaXXL")
         notanew = request.form.get("nota")
+        
+        if (str(id_colornew))=="None":cant_total=0
+        if (str(cant_totalnew))=="None":cant_total=0
+        if (str(cant_tallaSnew))=="None":cant_tallaS=0
+        if (str(cant_tallaMnew))=="None":cant_tallaM=0
+        if (str(cant_tallaLnew))=="None":cant_tallaL=0
+        if (str(cant_tallaXLnew))=="None":cant_tallaXL=0
+        if (str(cant_tallaXXLnew))=="None":cant_tallaXXL=0
 
-
-        if id_colornew     =="":id_colornew==0
-        if cant_totalnew   =="":cant_totalnew=0
-        if cant_tallaSnew  =="":cant_tallaSnew=0
-        if cant_tallaMnew  =="":cant_tallaMnew=0
-        if cant_tallaLnew  =="":cant_tallaLnew=0
-        if cant_tallaXLnew =="":cant_tallaXLnew=0
-        if cant_tallaXXLnew=="":cant_tallaXXLnew=0
+        
+        opold=request.form.get("opold").upper()
+        referenciaold = request.form.get("referenciaold").upper()
+        id_colorold   = request.form.get("colorold")
+        cantidadTotalold = request.form.get("cantidadTotalold")
+        cant_tallaSold = request.form.get("cant_tallaSold")
+        cant_tallaMold = request.form.get("cant_tallaMold")
+        cant_tallaLold = request.form.get("cant_tallaLold")
+        cant_tallaXLold = request.form.get("cant_tallaXLold")
+        cant_tallaXXLold = request.form.get("cant_tallaXXLold")
+        notaold = request.form.get("notaold")
 
         prend    = Prenda.query.filter_by(id_prenda=id_prenda).first()
         prend.op = opnew
@@ -444,34 +449,32 @@ def update():
         prend.rM  = cant_tallaMnew
         prend.rL  = cant_tallaLnew
         prend.rXL = cant_tallaXLnew
-        prend.rXXL= cant_tallaXXLnew
-        prend.nota= notanew
-        db.engine.execute('delete from operacion where id_prenda ={};'.format(id_prenda))
+        prend.rXXL= cant_tallaXXLnew              
+        #notas = Prenda.query.filter_by(nota=notaold).first()
+        #for row in notas:
+         #   print(row.nota)
+        #notas.nota = str(notanew).translate({ord('('): None}).translate({ord(')'): None}).translate({ord("'"): None}).translate({ord(','): None})
+        #print(str(notaold,notanew))
         db.session.commit()
     except Exception as e:
-        flash('error en la operacion no se pudo actualizar!')
+        print("Couldn't update book title")
         print(e)
     return redirect("/registro")
 
 @app.route("/delete", methods=["POST"])
 def delete():
-    if 1==5:
-        #not session.get("logged_in"):
-        flash('No se encuentra registrado')
+    if 1==5:#not session.get("logged_in"):
         return render_template("login.html")
     else:
-        try:
-            idpre = request.form.get("id_pren")
-            prenda = Prenda.query.filter_by(id_prenda=idpre).first()
-            db.engine.execute('delete from operacion where id_prenda ={};'.format(idpre))
-            db.engine.execute('delete from operacion where id_prenda ="";')
+        idpre = request.form.get("id_pren")
+        prenda = Prenda.query.filter_by(id_prenda=idpre).first()
+        db.engine.execute('delete from operacion where id_prenda ={};'.format(idpre))
+        db.engine.execute('delete from operacion where id_prenda ="";')
 
-            db.session.delete(prenda)
-            db.session.commit()
-        except Exception as e:
-            flash('error en la operacion no se pudo borrar!')
-            print(e)
-    
+    #operacion = Operacion.query.filter_by(id_prenda=idpre)
+  #  db.session.delete(operacion)
+        db.session.delete(prenda)
+        db.session.commit()
     return redirect("/registro")
 
 @app.route("/logout")
