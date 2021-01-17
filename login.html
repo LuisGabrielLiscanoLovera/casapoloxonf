@@ -33,6 +33,24 @@
 <p>You're logged in already!</p>
 {% else %}
 
+<div class="col-sm-12">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        
+            <div class="alert bg-danger alert-{{ category }} alert-dismissible fade show" role="alert">
+                <span><d class="text-light">{{ message }}</d></span>
+                <button type="button" class="close btn " data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+    </div>
+
 
 <div class="row">
 <div class="col-3">

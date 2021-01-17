@@ -154,7 +154,7 @@ def login():
     if not registered_user is None:
         session['logged_in'] = True
     else:
-        flash('wrong password!')
+        flash('Usuario o Clave incorrecto!')
     return home()
 
 # Signup page
@@ -398,7 +398,7 @@ def operacion():
                 db.session.commit()
 
             except Exception as e:
-                print("Failed to add operacion")
+                flash('error en la operacion')
                 print(e)
   
     return redirect(url_for('registro'))
@@ -420,14 +420,15 @@ def update():
         cant_tallaXLnew = request.form.get("cant_tallaXL")
         cant_tallaXXLnew = request.form.get("cant_tallaXXL")
         notanew = request.form.get("nota")
-        
-        if (str(id_colornew))=="None":cant_total=0
-        if (str(cant_totalnew))=="None":cant_total=0
-        if (str(cant_tallaSnew))=="None":cant_tallaS=0
-        if (str(cant_tallaMnew))=="None":cant_tallaM=0
-        if (str(cant_tallaLnew))=="None":cant_tallaL=0
-        if (str(cant_tallaXLnew))=="None":cant_tallaXL=0
-        if (str(cant_tallaXXLnew))=="None":cant_tallaXXL=0
+
+
+        if id_colornew     =="":id_colornew==0
+        if cant_totalnew   =="":cant_totalnew=0
+        if cant_tallaSnew  =="":cant_tallaSnew=0
+        if cant_tallaMnew  =="":cant_tallaMnew=0
+        if cant_tallaLnew  =="":cant_tallaLnew=0
+        if cant_tallaXLnew =="":cant_tallaXLnew=0
+        if cant_tallaXXLnew=="":cant_tallaXXLnew=0
 
         prend    = Prenda.query.filter_by(id_prenda=id_prenda).first()
         prend.op = opnew
@@ -448,24 +449,29 @@ def update():
         db.engine.execute('delete from operacion where id_prenda ={};'.format(id_prenda))
         db.session.commit()
     except Exception as e:
-        print("Couldn't update book title")
+        flash('error en la operacion no se pudo actualizar!')
         print(e)
     return redirect("/registro")
 
 @app.route("/delete", methods=["POST"])
 def delete():
-    if 1==5:#not session.get("logged_in"):
+    if 1==5:
+        #not session.get("logged_in"):
+        flash('No se encuentra registrado')
         return render_template("login.html")
     else:
-        idpre = request.form.get("id_pren")
-        prenda = Prenda.query.filter_by(id_prenda=idpre).first()
-        db.engine.execute('delete from operacion where id_prenda ={};'.format(idpre))
-        db.engine.execute('delete from operacion where id_prenda ="";')
+        try:
+            idpre = request.form.get("id_pren")
+            prenda = Prenda.query.filter_by(id_prenda=idpre).first()
+            db.engine.execute('delete from operacion where id_prenda ={};'.format(idpre))
+            db.engine.execute('delete from operacion where id_prenda ="";')
 
-    #operacion = Operacion.query.filter_by(id_prenda=idpre)
-  #  db.session.delete(operacion)
-        db.session.delete(prenda)
-        db.session.commit()
+            db.session.delete(prenda)
+            db.session.commit()
+        except Exception as e:
+            flash('error en la operacion no se pudo borrar!')
+            print(e)
+    
     return redirect("/registro")
 
 @app.route("/logout")
