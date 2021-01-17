@@ -448,11 +448,11 @@ function format ( d ) {
         '<center><h6 class="modal-title w-100 font-weight-bold text-decoration-underline">Cantidad Talla Total</h6></center>'+
         '<div class="row " >'+
         '<div class="col-sm-4">'+
-        '<br>S    :' +d.tallaSS   +
-        '<br>M    :' +d.tallaM    +
-        '<br>L    :' +d.tallaL    +
-        '<br>XL   :' +d.tallaXL   +
-        '<br>XXL  :' +d.tallaXXL  +
+        '<br><d class="font-weight-bold text-decoration-underline">S    :' +d.tallaSS   +'</d>'+
+        '<br><d class="font-weight-bold text-decoration-underline">M    :' +d.tallaM    +'</d>'+
+        '<br><d class="font-weight-bold text-decoration-underline">L    :' +d.tallaL    +'</d>'+
+        '<br><d class="font-weight-bold text-decoration-underline">XL   :' +d.tallaXL   +'</d>'+
+        '<br><d class="font-weight-bold text-decoration-underline">XXL  :' +d.tallaXXL  +'</d>'+
         '</div>'+
         '<div class="col-sm-8">'+
         '<br>'+d.rS+
@@ -469,7 +469,7 @@ function format ( d ) {
         '<div class="col-3">'+
         '<center><h6 class="modal-title w-100 font-weight-bold text-decoration-underline">Cantidad Registrada '+d.total+' </h6></center><br>'+
         
-        'Prendas '+d.tallaS+
+        'Prendas '+'<d class="font-weight-bold text-decoration-underline">'+d.tallaS+'</d>'+
         '<br>'+
                 
         '</div><div class="col-3">'+
@@ -547,7 +547,7 @@ $(document).ready(function() {
     var dt = $('#example').DataTable( {
         
         "language": {
-            "search":'Buscar: ',
+            "search":'<d class="font-weight-bold text-decoration-underline">Buscar: </d>',
             "lengthMenu": " Mostrar _MENU_ registro por paguina",
             'zeroRecords': '<div class="spinner-border text-success" role="status"><span class="sr-only">Loading...</span></div>',
             "info": " Mostrar por pagina _PAGE_ of _PAGES_",
