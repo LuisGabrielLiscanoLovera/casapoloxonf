@@ -83,13 +83,14 @@ def ct(id_prenda):
     operacion = db.engine.execute('select * from operacion where id_prenda ={};'.format(int(id_prenda)))
     sumaTotal = db.engine.execute('select sum(can_terminada) as suma from operacion where id_prenda ={};'.format(id_prenda))
     sumaTotalR =db.engine.execute('select sum(can_resta) as sumaR from operacion where id_prenda ={};'.format(id_prenda))
-
+    
     sct=()
     ct=()
     fec=None
     tll=()
     tllT=()
     idop=()
+    histo=()
     rt=0
     
     for row in operacion:
@@ -110,17 +111,21 @@ def ct(id_prenda):
         tl=''
         txl=''
         txxl=''
+        histo=''
         for row in tallas:
             ltll = list(tll)
             ltll.append(row.nom_talla)
             tll = tuple(ltll)
             for roww in tallasT:
                 ltllT=list(tllT)
+                lhisto= list(histo)
                 for rowww in tallasTR:
                     if roww.tallTT-rowww.tallTR ==0:pass
                     else:
-                        ltllT.append(str("<br>"+str(row.nom_talla)+"="+str(roww.tallTT-rowww.tallTR)+""))
+                        ltllT.append(str("<br>"+str(row.nom_talla)+" = "+str(roww.tallTT-rowww.tallTR)+""))
+                        lhisto.append(str("<br>"+str(row.nom_talla)+" = "+str(roww.tallTT)))
                         tllT = tuple(set(ltllT))
+                        histo=tuple(set(lhisto))
           
     for row in sumaTotal:
         for roww in sumaTotalR:
@@ -136,7 +141,7 @@ def ct(id_prenda):
                 except Exception as e:
                     pass
     
-    return {'ct':ct,'tll':tll,'tllT':tllT,'fecp':fec,'sct':sct,'rt':rt,'idop':idop}
+    return {'ct':ct,'tll':tll,'tllT':tllT,'fecp':fec,'sct':sct,'rt':rt,'idop':idop,'histo':histo}
 
 def vacio(vacio):
     if vacio==0:return ''
@@ -206,22 +211,22 @@ def getData():
             if type(XXL)==str:XXL=0
             if canFalt  ==0:canFalt=('<d class="text-info">(Completa!) <i class="icofont-verification-check"></i></d>')
             elif canFalt  <0:canFalt =("<d> Se pasa por ("+str(canFalt*-1)  +")"+'<i class="icofont-exclamation-tringle"></i></d>')   
-            else:canFalt=('<d class="text-danger">(faltan : '+str(canFalt)+') <i class="icofont-error"></i></d>')
+            else:canFalt=('<d class="text-danger">(falta : '+str(canFalt)+') <i class="icofont-error"></i></d>')
             if S  ==0:S  =('<d class="text-info">----------</d>')
             elif S  <0:S =("<d> Se pasa por ("+str(S*-1)  +")"+'<i class="icofont-exclamation-tringle"></i></d>')
-            else:S  =('<d class="text-danger">(faltan : '+str(S)+') <i class="icofont-error"></i></d>')
+            else:S  =('<d class="text-danger">(falta : '+str(S)+') <i class="icofont-error"></i></d>')
             if M  ==0:M  =('<d class="text-info">----------</d>')
             elif M  <0:M =("<d> Se pasa por ("+str(M*-1)  +")"+'<i class="icofont-exclamation-tringle"></i></d>')
-            else:M  =('<d class="text-danger">(faltan : '+str(M)+') <i class="icofont-error"></i></d>')
+            else:M  =('<d class="text-danger">(falta : '+str(M)+') <i class="icofont-error"></i></d>')
             if L  ==0:L  =('<d class="text-info">----------</d>')
             elif L  <0:L =("<d> Se pasa por ("+str(L*-1)  +")"+'<i class="icofont-exclamation-tringle"></i></d>')
-            else:L  =('<d class="text-danger">(faltan : '+str(L)+') <i class="icofont-error"></i></d>')
+            else:L  =('<d class="text-danger">(falta : '+str(L)+') <i class="icofont-error"></i></d>')
             if XL ==0:XL =('<d class="text-info">----------</d>')
             elif XL  <0:XL =("<d> Se pasa por ("+str(XL*-1)  +")"+'<i class="icofont-exclamation-tringle"></i></d>')
-            else:XL  =('<d class="text-danger">(faltan : '+str(XL)+') <i class="icofont-error"></i></d>')
+            else:XL  =('<d class="text-danger">(falta : '+str(XL)+') <i class="icofont-error"></i></d>')
             if XXL==0:XXL=('<d class="text-info">----------</d>')
             elif XXL  <0:XXL =("<d> Se pasa por ("+str(XXL*-1)  +")"+'<i class="icofont-exclamation-tringle"></i></d>')
-            else:XXL  =('<d class="text-danger">(faltan : '+str(XXL)+') <i class="icofont-error"></i></d>')
+            else:XXL  =('<d class="text-danger">(falta : '+str(XXL)+') <i class="icofont-error"></i></d>')
             if type(row.cant_tallaS)   ==str:row.cant_tallaS  =0
             if type(row.cant_tallaM)   ==str:row.cant_tallaM  =0
             if type(row.cant_tallaL)   ==str:row.cant_tallaL  =0
@@ -237,13 +242,13 @@ def getData():
                 Prenda.query.filter_by(id_prenda=row.id_prenda).first().estado = 'Cerrado'
                 db.session.commit()
                 estado='<d class="h6 text-success">Cerrado<i class="icofont-minus-circle"></i></d>'
-                opD='<d class="text-success">'+str(i)+'#  '+str(row.op)+'</d>'
+                opD='<d class="text-success icofont-verification-check">'+str(i)+')  '+str(row.op)+'</d>'
                 fec=ct(row.id_prenda)['fecp']
             else:
                 Prenda.query.filter_by(id_prenda=row.id_prenda).first().estado = 'Abierto'
                 db.session.commit()
                 estado='<d class="h6 text-info">Abierto<i class="icofont-automation"></i></d>'
-                opD='<d class="text-info">'+str(i)+'#  '+str(row.op)+'</d>'
+                opD='<d class="text-info icofont-error">'+str(i)+')  '+str(row.op)+'</d>'
                 fec=''
             
             fecha=(str(row.fecha))[:16].translate({ord(' '): ' / '})+' <i class="icofont-clock-time"></i>'
@@ -253,7 +258,7 @@ def getData():
           "opD": "{}".format(opD),
           "op": "{}".format(row.op),
           "referencia":"{}".format(row.referencia),
-          "color": "{}".format(row.id_color),
+          "color": "{}".format(str(row.id_color)),
           "cantidadTotal": "{}".format(row.cant_total),
           "fecha": "{}".format(fecha),
           "canTerminada":ct(row.id_prenda)['ct'],
@@ -276,6 +281,7 @@ def getData():
           "canFaltante": "{}".format(canFalt),
           "estado": estado,
           "noIgual":noIgual,
+          "historia":ct(row.id_prenda)['histo'],
 })
         abuelo=jsonify(datas)
     #print (datas)
@@ -283,7 +289,7 @@ def getData():
 
 @app.route('/')
 def home():
-    if not session.get("logged_in"):
+    if 1==5:#not session.get("logged_in"):
         return render_template("login.html")
     else:
         return redirect(url_for('registro'))#"Hello, Boss! <a href=\"/logout\"> Logout"
@@ -464,8 +470,7 @@ def update():
 
 @app.route("/delete", methods=["POST"])
 def delete():
-    if 1==5:
-        #not session.get("logged_in"):
+    if 1==5:#not session.get("logged_in"):
         flash('No se encuentra registrado')
         return render_template("login.html")
     else:
@@ -487,15 +492,70 @@ def delete():
 def logout():
     session['logged_in'] = False
     return home()
-import socket
-nombre_equipo = socket.gethostname()
-print ("El nombre del equipo es: %s" %nombre_equipo)
-direccion_equipo = socket.gethostbyname(nombre_equipo)
-print ("La IP es: %s" %direccion_equipo)
+
+
+@app.route('/background_process')
+def background_process():
+    if 1==5:#not session.get("logged_in"):
+        return render_template("login.html")
+    else:
+        if request.args:
+            try:
+                id_prenda=request.args.get("id_prenda", 0, type=int)
+                can_terminada = request.args.get("can_terminada", 0, type=int)
+                id_talla      = request.args.get("id_talla", 0, type=int)
+                prenda        = Prenda.query.filter_by(id_prenda=id_prenda).first()
+                decremt       = request.args.get("resta", 0, type=int)
+#                oper          = Operacion.query.filter_by(id_prenda=request.form.get("id_prenda")).first()
+                print (id_talla)
+                if str(decremt)=="resta":
+                    can_resta     = request.args.get("can_terminada",0, type=int)
+                    can_terminada = 0
+                    if id_talla==1:prenda.rS  =(prenda.rS+int(can_resta))
+                    if id_talla==2:prenda.rM  =(prenda.rM+int(can_resta))
+                    if id_talla==3:prenda.rL  =(prenda.rL+int(can_resta))
+                    if id_talla==4:prenda.rXL =(prenda.rXL+int(can_resta))
+                    if id_talla==5:prenda.rXXL=(prenda.rXXL+int(can_resta))
+
+                else:
+                    can_terminada = request.args.get("can_terminada",0, type=int)
+                    can_resta     = 0
+                    if id_talla==1:prenda.rS  =(prenda.rS-int(can_terminada))#db.engine.execute ('UPDATE prenda set rS = 1 where id_prenda=1;')
+                    if id_talla==2:prenda.rM  =(prenda.rM-int(can_terminada))
+                    if id_talla==3:prenda.rL  =(prenda.rL-int(can_terminada))
+                    if id_talla==4:prenda.rXL =(prenda.rXL-int(can_terminada))
+                    if id_talla==5:prenda.rXXL=(prenda.rXXL-int(can_terminada))
+                operacion     = Operacion(fecha  =dt,
+                                   id_prenda     = request.args.get("id_prenda",0, type=int),
+                                   can_terminada = can_terminada,
+                                   can_resta     = can_resta,
+                                   id_talla      = request.args.get("id_talla",0, type=int))        
+                
+                if id_talla=="Seleccione Talla" or id_talla=="None" or can_terminada=="None" or can_terminada=="" or id_prenda=="None":pass
+                else:
+                    db.session.add(prenda)
+                    db.session.add(operacion)
+                    db.session.commit()
+                        
+            except Exception as e:
+                flash('error en la operacion')
+                print(e)
+    return jsonify(result='id_talla:'+str(id_talla)+' cantidad:'+str(can_terminada))
+ #   return redirect(url_for('registro'))    
+
+
+
+
+@app.route('/interactive/')
+def interactive():
+    return render_template('interactive.html')
+
+
+
 if __name__ == '__main__':
     app.debug = True
     app.secret_key =gerar_token(8)
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.run(host='192.168.1.55', port=2000)
+    app.run(host='127.0.0.1', port=5000)
     #app.run(host=str(direccion_equipo), port=4000)
