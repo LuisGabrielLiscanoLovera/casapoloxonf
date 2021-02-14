@@ -281,27 +281,49 @@ closes tr.shown td.details-control {
 <script type="text/javascript">
 
 function format ( d ) {
-   // alert(typeof(d.canTerminada));
+   // alert(typeof(d.canTerminada
+   
     //console.log( Object.prototype.toString.call([d.canTerminada]));
             
 //$.each([d.canTerminada], function(  key, value ) {
  // alert( key + ": " + value );
 //});
-    $(function() {$('a#process_input').bind('click', function() { $.getJSON('/background_process',
+
+ 
+
+$.getJSON('/getDataFaltante/'+d.id_pr,
+  function(data) {$("#rtS"+d.id_pr+"").text(data.megaRS);})
+$.getJSON('/getDataFaltante/'+d.id_pr,
+  function(data) {$("#rtM"+d.id_pr+"").text(data.megaRM);})
+$.getJSON('/getDataFaltante/'+d.id_pr,
+  function(data) {$("#rtL"+d.id_pr+"").text(data.megaRL);})
+$.getJSON('/getDataFaltante/'+d.id_pr,
+  function(data) {$("#rtXL"+d.id_pr+"").text(data.megaRXL);})
+$.getJSON('/getDataFaltante/'+d.id_pr,
+  function(data) {$("#rtXXL"+d.id_pr+"").text(data.megaRXXL);})
+$.getJSON('/getDataFaltante/'+d.id_pr,
+  function(data) {$("#cf"+d.id_pr+"").text(data.megacanFalt);})
+
+    $(function() {$('a#process_input').bind('click', function() {
+            $.getJSON('/background_process',
             {id_talla: $('select[name="id_talla'+d.id_pr+'"]').val(),
              can_terminada: $('input[name="can_terminada'+d.id_pr+'"]').val(),
              id_prenda: $('input[name="id_prenda'+d.id_pr+'"]').val(),
              resta: $('input[name="resta'+d.id_pr+'"]').val()},
              
-         function(data) {$("#result").text(data.result);});return false;});});
+         function(data) {$("#result"+d.id_pr+"").text(data.result);});
+            return false;});});
 
     return'<div class="row"><div class="col-3">'+
-        '<form method="POST action="><p id=result></p><div class="form-group"><center><label class="form-group">'+
+        '<form method="POST action="><p id="result'+d.id_pr+'"></p><div class="form-group"><center><label class="form-group">'+
+
+//Registrar tarea
+
         '<h6 class="modal-title w-100 font-weight-bold text-decoration-underline ">Registar Tarea</h6></label></center>'+
         '<div class=" "><select class="form-control-sm custom-select" name="id_talla'+d.id_pr+'"><option selected>Seleccione Talla</option><option value="1">Talla S</option><option value="2">Talla M</option> <option value="3">Talla L</option><option value="4">Talla XL</option><option value="5">Talla XXL</option></select></div>'+
         '<div class="  "><input type="number" class="form-control" id="tsid'+d.op+
         '1" name="can_terminada'+d.id_pr+'" aria-describedby="number" placeholder="cantidad"></div>'+
-        '<input type="number" hidde="true" id="tsid'+d.op+
+        '<input type="number" hidden="true" id="tsid'+d.op+
         '2" name="id_prenda'+d.id_pr+'" aria-describedby="number" value="'+d.id_pr+
         '">'+
         '<div class="row">'+
@@ -310,34 +332,41 @@ function format ( d ) {
         '<div class=""><a  href=# dden id=process_input><button class="btn btn-outline-info form-group" type="submit" >Guardar</button></a></div></div>'+
         '</form></div>'+
         '<div class="col-3 border rounded">'+
+//Cantidad Talla Total
+
+
         '<center><h6 class="modal-title w-100 font-weight-bold text-decoration-underline">Cantidad Talla Total</h6></center>'+
-        '<div class="row " >'+
-        '<div class="col-sm-5">'+
+        '<div class="row " id="ctt" ><div class="col-sm-5">'+
         '<br><d class="font-weight-bold text-success text-decoration-underline">S    :' +d.tallaSS   +'</d>'+
         '<br><d class="font-weight-bold text-primary text-decoration-underline">M    :' +d.tallaM    +'</d>'+
         '<br><d class="font-weight-bold text-danger  text-decoration-underline">L    :' +d.tallaL    +'</d>'+
-        '<br><d class="font-weight-bold text-decoration-underline">XL   :' +d.tallaXL   +'</d>'+
+        '<br><d class="font-weight-bold text-decoration-underline">             XL   :' +d.tallaXL   +'</d>'+
         '<br><d class="font-weight-bold text-warning text-decoration-underline">XXL  :' +d.tallaXXL  +'</d>'+
         '</div>'+
         '<div class="col-sm-7">'+
-        '<br><d class="font-weight-bold text-success">'+d.rS+'</d>'+
-        '<br><d class="font-weight-bold text-success">'+d.rM+'</d>'+
-        '<br><d class="font-weight-bold text-success">'+d.rL+'</d>'+
-        '<br><d class="font-weight-bold text-success">'+d.rXL+'</d>'+
-        '<br><d class="font-weight-bold text-success">'+d.rXXL+'</d>'+
+        '<br><d id="rtS'+d.id_pr+'">  </d>'+
+        '<br><d id="rtM'+d.id_pr+'">  </d>'+
+        '<br><d id="rtL'+d.id_pr+'">  </d>'+
+        '<br><d id="rtXL'+d.id_pr+'"> </d>'+
+        '<br><d id="rtXXL'+d.id_pr+'"></d>'+
         '</div>'+
         '</div>'+d.noIgual+       
         '<hr>'+
         'Total tallas : '+d.totalTalla+
-        '<br>Cantidad '+d.canFaltante+
+        '<br><d id="cf'+d.id_pr+'">Cantidad '+d.canFaltante+
         '</div>'+
+
         '<div class="col-3">'+
+//Cantidad Registrada
+
         '<center><h6 class="modal-title w-100 font-weight-bold text-decoration-underline">Cantidad Registrada '+d.total+' </h6></center><br>'+
         
         'Prendas '+'<d class="font-weight-bold text-decoration-underline">'+d.tallaS+'</d>'+
         '<br>'+
                 
         '</div><div class="col-3">'+
+//Accion
+
         '<center><h6 class="modal-title w-100 font-weight-bold text-decoration-underline">Accion</h6></center>'+
         '<div class="container my-4"><div class="modal fade" id="modalSubscriptionFor" tabindex="-1" role="dialog" aria-labelledby="myModalLabe" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header text-center"><h4 class="modal-title w-100 font-weight-bold text-muted ms-5">Editar registro Polo</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
         '</div><div class="modal-body mx-6">'+
@@ -449,6 +478,7 @@ $(document).ready(function() {
             { "data": "fecha" }
         ],
         "order": [[1, 'dsc']]
+
     } );
  
     // Array to track the ids of the details displayed rows
