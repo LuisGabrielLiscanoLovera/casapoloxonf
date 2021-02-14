@@ -545,19 +545,19 @@ def getDataFaltante(id_prenda):
 
         if rS  ==0:rS  ='----------'
         elif rS  <0:rS ="Se pasa por ("+str(rS*-1)  +")"
-        else:rS  ='falta : '+str(rS)+')'
+        else:rS  ='falta : '+str(rS)
         if rM  ==0:rM  ='----------'
         elif rM <0:rM ="Se pasa por ("+str(rM*-1)  +")"
-        else:rM  ='falta : '+str(rM)+')'
+        else:rM  ='falta : '+str(rM)
         if rL  ==0:rL  =('----------')
         elif rL  <0:rL ="Se pasa por ("+str(rL*-1)  +")"
-        else:rL  ='falta : '+str(rL)+')'
+        else:rL  ='falta : '+str(rL)
         if rXL ==0:rXL ='----------'
         elif rXL  <0:rXL =" Se pasa por ("+str(rXL*-1)  +")"
-        else:rXL  ='falta : '+str(rXL)+')'
+        else:rXL  ='falta : '+str(rXL)
         if rXXL==0:rXXL='----------'
         elif rXXL  <0:rXXL ="Se pasa por ("+str(rXXL*-1)  +")"
-        else:rXXL  ='falta : '+str(rXXL)+')'    
+        else:rXXL  ='falta : '+str(rXXL)   
     return jsonify(megaRS=str(rS),
         megaRM=str(rM),
         megaRL=str(rL),

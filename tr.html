@@ -288,22 +288,24 @@ function format ( d ) {
 //$.each([d.canTerminada], function(  key, value ) {
  // alert( key + ": " + value );
 //});
-
+function getDataFaltante(id_pr){
  
+    $.getJSON('/getDataFaltante/'+id_pr,
+      function(data) {$("#rtS"+id_pr+"").text(data.megaRS);})
+    $.getJSON('/getDataFaltante/'+id_pr,
+      function(data) {$("#rtM"+d.id_pr+"").text(data.megaRM);})
+    $.getJSON('/getDataFaltante/'+id_pr,
+      function(data) {$("#rtL"+id_pr+"").text(data.megaRL);})
+    $.getJSON('/getDataFaltante/'+id_pr,
+      function(data) {$("#rtXL"+id_pr+"").text(data.megaRXL);})
+    $.getJSON('/getDataFaltante/'+id_pr,
+      function(data) {$("#rtXXL"+id_pr+"").text(data.megaRXXL);})
+    $.getJSON('/getDataFaltante/'+id_pr,
+      function(data) {$("#cf"+id_pr+"").text(data.megacanFalt);})
 
-$.getJSON('/getDataFaltante/'+d.id_pr,
-  function(data) {$("#rtS"+d.id_pr+"").text(data.megaRS);})
-$.getJSON('/getDataFaltante/'+d.id_pr,
-  function(data) {$("#rtM"+d.id_pr+"").text(data.megaRM);})
-$.getJSON('/getDataFaltante/'+d.id_pr,
-  function(data) {$("#rtL"+d.id_pr+"").text(data.megaRL);})
-$.getJSON('/getDataFaltante/'+d.id_pr,
-  function(data) {$("#rtXL"+d.id_pr+"").text(data.megaRXL);})
-$.getJSON('/getDataFaltante/'+d.id_pr,
-  function(data) {$("#rtXXL"+d.id_pr+"").text(data.megaRXXL);})
-$.getJSON('/getDataFaltante/'+d.id_pr,
-  function(data) {$("#cf"+d.id_pr+"").text(data.megacanFalt);})
 
+}
+getDataFaltante(d.id_pr);
     $(function() {$('a#process_input').bind('click', function() {
             $.getJSON('/background_process',
             {id_talla: $('select[name="id_talla'+d.id_pr+'"]').val(),
@@ -311,7 +313,8 @@ $.getJSON('/getDataFaltante/'+d.id_pr,
              id_prenda: $('input[name="id_prenda'+d.id_pr+'"]').val(),
              resta: $('input[name="resta'+d.id_pr+'"]').val()},
              
-         function(data) {$("#result"+d.id_pr+"").text(data.result);});
+         function(data) {$("#result"+d.id_pr+"").text(data.result);getDataFaltante(d.id_pr);});
+            
             return false;});});
 
     return'<div class="row"><div class="col-3">'+
