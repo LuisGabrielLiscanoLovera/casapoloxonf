@@ -289,7 +289,7 @@ function format ( d ) {
  // alert( key + ": " + value );
 //});
 function getDataFaltante(id_pr){
- 
+//cantidad talla total 
     $.getJSON('/getDataFaltante/'+id_pr,
       function(data) {$("#rtS"+id_pr+"").text(data.megaRS);})
     $.getJSON('/getDataFaltante/'+id_pr,
@@ -302,8 +302,11 @@ function getDataFaltante(id_pr){
       function(data) {$("#rtXXL"+id_pr+"").text(data.megaRXXL);})
     $.getJSON('/getDataFaltante/'+id_pr,
       function(data) {$("#cf"+id_pr+"").text(data.megacanFalt);})
-
-
+    $.getJSON('/getDataFaltante/'+id_pr,
+      function(data) {$("#cr"+id_pr+"").text(data.megacanCR);})
+//cantidad registrada
+    $.getJSON('/getDataFaltante/'+id_pr,
+      function(data) {$("#pS"+id_pr+"").text(data.megacanPS);})
 }
 getDataFaltante(d.id_pr);
     $(function() {$('a#process_input').bind('click', function() {
@@ -362,9 +365,11 @@ getDataFaltante(d.id_pr);
         '<div class="col-3">'+
 //Cantidad Registrada
 
-        '<center><h6 class="modal-title w-100 font-weight-bold text-decoration-underline">Cantidad Registrada '+d.total+' </h6></center><br>'+
+        '<center><h6 class="modal-title w-100 font-weight-bold text-decoration-underline">Cantidad Registrada [<d id="cr'+d.id_pr+'"></d>] </h6></center><br>'+
         
-        'Prendas '+'<d class="font-weight-bold text-decoration-underline">'+d.tallaS+'</d>'+
+        'Prendas '+
+        '<br>'+
+        '<d class="font-weight-bold text-decoration-underline" id="pS'+d.id_pr+'"></d>'+
         '<br>'+
                 
         '</div><div class="col-3">'+

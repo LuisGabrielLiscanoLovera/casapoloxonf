@@ -155,18 +155,18 @@ def ct(id_prenda):
                         histo=tuple(set(lhisto))
     for row in sumaTotal:
         for roww in sumaTotalR:
-            lsct = list(sct)
+            lsct = str(sct)
             if row.suma==None:
                 rt=int(0)          
             if roww.sumaR ==None and row.suma==None :pass
             else:
-                lsct.append('[ '+str(int(row.suma)-int(roww.sumaR))+' ]')
-                sct=tuple(lsct)
+                lsct=int(row.suma)-int(roww.sumaR)
+                
                 try:
                     rt=int(row.suma-roww.sumaR)
                 except Exception as e:
                     pass
-    return {'ct':ct,'tll':tll,'tllT':tllT,'fecp':fec,'sct':sct,'rt':rt,'idop':idop,'histo':histo}
+    return {'ct':ct,'tll':tll,'tllT':tllT,'fecp':fec,'sct':lsct,'rt':rt,'idop':idop,'histo':histo}
 
 def vacio(vacio):
     if vacio==0:return ''
@@ -266,7 +266,6 @@ def getData():
           "nota": "{}".format(row.nota),
           "tallas":ct(row.id_prenda)['tll'],
           "tallaS":ct(row.id_prenda)['tllT'],
-          "total":ct(row.id_prenda)['sct'],
           "feechaOperacion": fec,
           "estado": estado,
           "noIgual":noIgual,
@@ -527,17 +526,41 @@ def background_process():
     #datas = getData()['datas']
     return jsonify(result='id_talla:'+str(id_talla)+' cantidad:'+str(can_terminada))
 
+
+
 @app.route('/getDataFaltante/<id_prenda>')
 def getDataFaltante(id_prenda):
-    prenda   = db.engine.execute('select rS, rM, rL, rXL, rXXL , op, cant_total from prenda where id_prenda ={};'.format(id_prenda))
+    operacion = db.engine.execute('select * from operacion where id_prenda ={};'.format(int(id_prenda)))
+    t=()
+    tll=()
+    tllT=()
+    for row in operacion:
+        tallas   = db.engine.execute('select nom_talla from talla where id_talla ={};'.format(row.id_talla))
+        tallasT  = db.engine.execute('select sum(can_terminada) as tallTT from operacion where id_prenda ={} AND id_talla={};'.format(row.id_prenda,row.id_talla))
+        tallasTR = db.engine.execute('select sum(can_resta) as tallTR from operacion where id_prenda ={} AND id_talla={};'.format(row.id_prenda,row.id_talla))
+
+        for row in tallas:
+            ltll = list(tll)
+            ltll.append(row.nom_talla)
+            tll = tuple(ltll)
+            for roww in tallasT:
+                ltllT=list(tllT)
+                for rowww in tallasTR:
+                    if roww.tallTT-rowww.tallTR ==0:pass
+                    else:
+                        ltllT.append(str(str(row.nom_talla)+" = "+str(roww.tallTT-rowww.tallTR)+"   \n "))
+                        tllT = tuple(set(ltllT))
+    ltllT=(tllT)
     
+
+    prenda   = db.engine.execute('select rS, rM, rL, rXL, rXXL , op, cant_total from prenda where id_prenda ={};'.format(id_prenda))
     for i in prenda:
         rS=i.rS
         rM=i.rM
         rL=i.rL
         rXL=i.rXL
         rXXL=i.rXXL
-
+        total=ct(id_prenda)['sct'],
         canFalt=i.cant_total-ct(id_prenda)['rt']
         if canFalt  ==0:canFalt='(Completa!)'
         elif canFalt  <0:canFalt ="Se pasa por ("+str(canFalt*-1)  +")"   
@@ -563,14 +586,11 @@ def getDataFaltante(id_prenda):
         megaRL=str(rL),
         megaRXL=str(rXL),
         megaRXXL=str(rXXL),
-        megacanFalt=str(canFalt)
-        )
+        megacanFalt=str(canFalt),
+        megacanCR=total,
+        megacanPS=ltllT)
         #result ='id_talla:'+str(id_talla)+' cantidad:'+str(can_terminada)
         #return jsonify(prenda)
-
-        
-        
-     
 
 
 if __name__ == '__main__':
