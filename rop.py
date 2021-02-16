@@ -367,9 +367,11 @@ def operacion():
                 id_talla      = request.form.get("id_talla")
                 prenda        = Prenda.query.filter_by(id_prenda=request.form.get("id_prenda")).first()
                 decremt       = request.form.get("resta")
+
 #                oper          = Operacion.query.filter_by(id_prenda=request.form.get("id_prenda")).first()
 
-                if str(decremt)=="resta":
+                if decremt=='resta':
+              
                     can_resta     = request.form.get("can_terminada")
                     can_terminada = 0
                     if id_talla=='1':prenda.rS  =(prenda.rS+int(can_resta))
@@ -379,6 +381,7 @@ def operacion():
                     if id_talla=='5':prenda.rXXL=(prenda.rXXL+int(can_resta))
 
                 else:
+                    print('here')
                     can_terminada = request.form.get("can_terminada")
                     can_resta     = 0
                     if id_talla=='1':prenda.rS  =(prenda.rS-int(can_terminada))
@@ -491,8 +494,9 @@ def background_process():
                 can_terminada = request.args.get("can_terminada", 0, type=int)
                 id_talla      = request.args.get("id_talla", 0, type=int)
                 prenda        = Prenda.query.filter_by(id_prenda=id_prenda).first()
-                decremt       = request.args.get("resta", 0, type=int)
+                decremt       = request.args.get("resta", 0, type=str)
 #                oper          = Operacion.query.filter_by(id_prenda=request.form.get("id_prenda")).first()
+                print(decremt)
                 if str(decremt)=="resta":
                     can_resta     = can_terminada
                     can_terminada = 0
@@ -548,7 +552,7 @@ def getDataFaltante(id_prenda):
                 for rowww in tallasTR:
                     if roww.tallTT-rowww.tallTR ==0:pass
                     else:
-                        ltllT.append(str(str(row.nom_talla)+" = "+str(roww.tallTT-rowww.tallTR)+"   \n "))
+                        ltllT.append(str(str(row.nom_talla)+" =  "+str(roww.tallTT-rowww.tallTR)+"   "))
                         tllT = tuple(set(ltllT))
     ltllT=(tllT)
     
@@ -588,7 +592,7 @@ def getDataFaltante(id_prenda):
         megaRXXL=str(rXXL),
         megacanFalt=str(canFalt),
         megacanCR=total,
-        megacanPS=ltllT)
+        megacanPS=tuple(ltllT))
         #result ='id_talla:'+str(id_talla)+' cantidad:'+str(can_terminada)
         #return jsonify(prenda)
 
