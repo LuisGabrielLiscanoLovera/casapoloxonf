@@ -110,9 +110,6 @@ class Talla(db.Model):
 
 db.create_all()
 
-
-        
-
 def ct(id_prenda):
     operacion = db.engine.execute('select * from operacion where id_prenda ={};'.format(int(id_prenda)))
     sumaTotal = db.engine.execute('select sum(can_terminada) as suma from operacion where id_prenda ={};'.format(id_prenda))
@@ -132,7 +129,7 @@ def ct(id_prenda):
         lct=list(ct)
         lct.append(row.can_terminada)
         ct=tuple(lct)
-        fec=str('Fecha cierre:')+(str(row.fecha))[:16].translate({ord(' '): ' / '})+' <i class="icofont-clock-time"></i>'
+        fec=str('Fecha cierre:')+(str(row.fecha))[:16].translate({ord(' '): ' / '})+''
 
         tallas   = db.engine.execute('select nom_talla from talla where id_talla ={};'.format(row.id_talla))
         tallasT  = db.engine.execute('select sum(can_terminada) as tallTT from operacion where id_prenda ={} AND id_talla={};'.format(row.id_prenda,row.id_talla))
@@ -562,10 +559,8 @@ def getDataFaltante(id_prenda):
                         ltllT.append(str(str(row.nom_talla)+" =  "+str(roww.tallTT-rowww.tallTR)+"   "))
                         tllT = tuple(set(ltllT))
     ltllT=(tllT)
-    print(ltllT)
-    
-
-    prenda   = db.engine.execute('select rS, rM, rL, rXL, rXXL , op, cant_total from prenda where id_prenda ={};'.format(id_prenda))
+    prenda   = db.engine.execute('select id_prenda, rS, rM, rL, rXL, rXXL , op, cant_total from prenda where id_prenda ={};'.format(id_prenda))
+    cant_t=''
     for i in prenda:
         rS=i.rS
         rM=i.rM
@@ -592,7 +587,20 @@ def getDataFaltante(id_prenda):
         else:rXL  ='falta : '+str(rXL)
         if rXXL==0:rXXL='----------'
         elif rXXL  <0:rXXL ="Se pasa por ("+str(rXXL*-1)  +")"
-        else:rXXL  ='falta : '+str(rXXL)   
+        else:rXXL  ='falta : '+str(rXXL)
+        can_t=i.cant_total
+    X  =can_t-ct(id_prenda)['rt']
+    if X <= 0:
+        #Prenda.query.filter_by(id_prenda=id_prenda).first().estado = 'Cerrado'
+        #db.session.commit()
+        estado='Cerrado'
+        fec=ct(id_prenda)['fecp']
+    else:
+        #Prenda.query.filter_by(id_prenda=id_prenda).first().estado = 'Abierto'
+        #db.session.commit()
+        estado='Abierto'
+        fec=''
+    print(fec)
     return jsonify(megaRS=str(rS),
         megaRM=str(rM),
         megaRL=str(rL),
@@ -600,6 +608,8 @@ def getDataFaltante(id_prenda):
         megaRXXL=str(rXXL),
         megacanFalt=str(canFalt),
         megacanCR=total,
+        megaEdo=estado,
+        megaFec=fec,
         megacanPS=tuple(ltllT))
         #result ='id_talla:'+str(id_talla)+' cantidad:'+str(can_terminada)
         #return jsonify(prenda)

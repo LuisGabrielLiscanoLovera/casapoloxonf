@@ -159,8 +159,12 @@ h1 {
       </ul>
       <ul class="navbar-nav nav-flex-icons">
      <li class="nav-item">
-        </li><li class="nav-item">         
         </li>
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Despacho</a> </li>
+        <li class="nav-item"><a class="nav-link" href="#">Destajo</a> </li>
+        <li class="nav-item"><a class="nav-link" href="#">Participante</a>  </li>
+        <li class="nav-item"><a class="nav-link" href="#">Tareas</a>  </li>
+           
         <li class="nav-item">
           <a href="/logout" class="nav-link"><i class="icofont-logout"></i></a>
         </li>
@@ -251,6 +255,7 @@ closes tr.shown td.details-control {
 
 
 </style>
+
 <table id="example" class="table border-dark table-bordered table-hover table-sm"  cellspacing="0" width="100%">
         <thead>
             <tr class="p-3 mb-2 bg-info text-white">
@@ -307,6 +312,12 @@ function getDataFaltante(id_pr){
 //cantidad registrada
     $.getJSON('/getDataFaltante/'+id_pr,
       function(data) {$("#pS"+id_pr+"").text(data.megacanPS);})
+//estado
+    $.getJSON('/getDataFaltante/'+id_pr,
+      function(data) {$("#estado"+id_pr+"").text(data.megaEdo);})
+//fecha cierre
+    $.getJSON('/getDataFaltante/'+id_pr,
+      function(data) {$("#fecCierre"+id_pr+"").text(data.megaFec);})
 }
 getDataFaltante(d.id_pr);
     $(function() {$('a#process_input').bind('click', function() {
@@ -418,7 +429,7 @@ getDataFaltante(d.id_pr);
         
         '</form></div>'+
         '<hr>'+'<div class="row" >'+
-        '<div class="col-sm">Estado: '+d.estado+'</div>'+
+        '<div class="col-sm">Estado: <d id="estado'+d.id_pr+'">'+d.estado+'</d></div>'+
         // '<div class="col-sm">'+
         //'<button type="button" class="btn-sm btn btn-outline-secondary btn-rounded " data-toggle="modal" data-target="#exampleModalLong">Historia</button>'+ 
         //'<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="exampleModalLongTitle">Historico</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'+
@@ -430,7 +441,7 @@ getDataFaltante(d.id_pr);
         '<br><div class="col-sm"><a class="border border-dark btn-outline text-info btn-sm" '+
         'data-bs-toggle="tooltip" data-bs-placement="top"  title="'+d.nota+'">Nota</a>'+
         '</div>'+
-        '<div>'+d.feechaOperacion+'</div></div>';
+        '<div><d id="fecCierre'+d.id_pr+'">'+d.feechaOperacion+'</d></div></div>';
 }
 /*
         ffmpeg -f x11grab -r 25 -s 300x200 -i :0.0 -vcodec huffyuv screencast.avi
