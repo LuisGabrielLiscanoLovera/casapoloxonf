@@ -107,7 +107,11 @@ class Talla(db.Model):
     nom_talla= db.Column(db.String(2))
     def __repr__(self):
         return "<Title: {}>".format(self.nom_talla)
+
 db.create_all()
+
+
+        
 
 def ct(id_prenda):
     operacion = db.engine.execute('select * from operacion where id_prenda ={};'.format(int(id_prenda)))
@@ -287,15 +291,17 @@ def registro():
     if 1==5:#not session.get("logged_in"):
         return render_template("login.html")
     else:#dt=str(dt[:-7])))
-
+       
         try:
-            db.engine.execute("insert into users values(1,'admin','ccidbcomputacion@gmail.com','admin','3117569482');")
+            
+            db.engine.execute("insert into users values(1,'admin','ccidbcomputacion@gmail.com','admin','3117569482','1');")
             db.engine.execute("insert into talla values(1,'S');")
             db.engine.execute("insert into talla values(2,'M');")
             db.engine.execute("insert into talla values(3,'L');")
             db.engine.execute("insert into talla values(4,'XL');")
             db.engine.execute("insert into talla values(5,'XXL');")
             db.engine.execute("insert into talla values(6,'Punto');")
+            
         except Exception as e:pass
 
         if request.form:
@@ -494,11 +500,11 @@ def background_process():
                 can_terminada = request.args.get("can_terminada", 0, type=int)
                 id_talla      = request.args.get("id_talla", 0, type=int)
                 prenda        = Prenda.query.filter_by(id_prenda=id_prenda).first()
-                decremt       = request.args.get("resta", 0, type=str)
+               # decremt       = request.args.get("resta", 0, type=str)
 #                oper          = Operacion.query.filter_by(id_prenda=request.form.get("id_prenda")).first()
-                print(decremt)
-                if str(decremt)=="resta":
-                    can_resta     = can_terminada
+                
+                if int(can_terminada)<0:
+                    can_resta     = (can_terminada*(-1))
                     can_terminada = 0
                     if id_talla==1:prenda.rS  =(prenda.rS+int(can_resta))
                     if id_talla==2:prenda.rM  =(prenda.rM+int(can_resta))
@@ -508,6 +514,7 @@ def background_process():
 
                 else:
                     can_terminada = can_terminada
+                    print(prenda.rS,can_terminada)
                     can_resta     = 0
                     if id_talla==1:prenda.rS  =(prenda.rS-int(can_terminada))#db.engine.execute ('UPDATE prenda set rS = 1 where id_prenda=1;')
                     if id_talla==2:prenda.rM  =(prenda.rM-int(can_terminada))
@@ -555,6 +562,7 @@ def getDataFaltante(id_prenda):
                         ltllT.append(str(str(row.nom_talla)+" =  "+str(roww.tallTT-rowww.tallTR)+"   "))
                         tllT = tuple(set(ltllT))
     ltllT=(tllT)
+    print(ltllT)
     
 
     prenda   = db.engine.execute('select rS, rM, rL, rXL, rXXL , op, cant_total from prenda where id_prenda ={};'.format(id_prenda))
