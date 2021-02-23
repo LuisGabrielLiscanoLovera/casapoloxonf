@@ -161,10 +161,12 @@ h1 {
      <li class="nav-item">
         </li>
         <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Despacho</a> </li>
-        <li class="nav-item"><a class="nav-link" href="#">Destajo</a> </li>
-        <li class="nav-item"><a class="nav-link" href="#">Participante</a>  </li>
-        <li class="nav-item"><a class="nav-link" href="#">Tareas</a>  </li>
-           
+        <li class="nav-item"><a class="nav-link" href="/tareas">Tareas</a> </li>
+        <li class="nav-item"><a class="nav-link" href="#">Destajo</a>  </li>
+        <li class="nav-item"><a class="nav-link" href="#">Integrantes</a>  </li>
+        <li class="nav-item"><a class="nav-link" href="#">Record</a>  </li>
+        
+
         <li class="nav-item">
           <a href="/logout" class="nav-link"><i class="icofont-logout"></i></a>
         </li>
@@ -296,28 +298,17 @@ function format ( d ) {
 function getDataFaltante(id_pr){
 //cantidad talla total 
     $.getJSON('/getDataFaltante/'+id_pr,
-      function(data) {$("#rtS"+id_pr+"").text(data.megaRS);})
-    $.getJSON('/getDataFaltante/'+id_pr,
-      function(data) {$("#rtM"+d.id_pr+"").text(data.megaRM);})
-    $.getJSON('/getDataFaltante/'+id_pr,
-      function(data) {$("#rtL"+id_pr+"").text(data.megaRL);})
-    $.getJSON('/getDataFaltante/'+id_pr,
-      function(data) {$("#rtXL"+id_pr+"").text(data.megaRXL);})
-    $.getJSON('/getDataFaltante/'+id_pr,
-      function(data) {$("#rtXXL"+id_pr+"").text(data.megaRXXL);})
-    $.getJSON('/getDataFaltante/'+id_pr,
-      function(data) {$("#cf"+id_pr+"").text(data.megacanFalt);})
-    $.getJSON('/getDataFaltante/'+id_pr,
-      function(data) {$("#cr"+id_pr+"").text(data.megacanCR);})
-//cantidad registrada
-    $.getJSON('/getDataFaltante/'+id_pr,
-      function(data) {$("#pS"+id_pr+"").text(data.megacanPS);})
-//estado
-    $.getJSON('/getDataFaltante/'+id_pr,
-      function(data) {$("#estado"+id_pr+"").text(data.megaEdo);})
-//fecha cierre
-    $.getJSON('/getDataFaltante/'+id_pr,
-      function(data) {$("#fecCierre"+id_pr+"").text(data.megaFec);})
+    function(data) {$("#rtS"+id_pr+"").text(data.megaRS);
+    $("#rtM"+d.id_pr+"").text(data.megaRM);
+    $("#rtL"+id_pr+"").text(data.megaRL);
+    $("#rtXL"+id_pr+"").text(data.megaRXL);
+    $("#rtXXL"+id_pr+"").text(data.megaRXXL);
+    $("#cf"+id_pr+"").text(data.megacanFalt);
+    $("#cr"+id_pr+"").text(data.megacanCR);
+    $("#pS"+id_pr+"").text(data.megacanPS);
+    $("#estado"+id_pr+"").text(data.megaEdo);
+    $("#fecCierre"+id_pr+"").text(data.megaFec);
+  })
 }
 getDataFaltante(d.id_pr);
     $(function() {$('a#process_input').bind('click', function() {
@@ -325,8 +316,8 @@ getDataFaltante(d.id_pr);
             {id_talla: $('select[name="id_talla'+d.id_pr+'"]').val(),
              can_terminada: $('input[name="can_terminada'+d.id_pr+'"]').val(),
              id_prenda: $('input[name="id_prenda'+d.id_pr+'"]').val()},
-             
-         function(data) {$("#result"+d.id_pr+"").text(data.result);getDataFaltante(d.id_pr);});
+        function(data) {$("#result"+d.id_pr+"").text(data.result);
+        getDataFaltante(d.id_pr);});
             
             return false;});});
 

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <head>
+<script type="text/javascript" src="/static/jq.js"></script>
+<script type="text/javascript" src="/static/axios.min.js"></script>
+<script type="text/javascript" src="/static/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/popper.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap.min.js"></script>
+<script type="text/javascript" src="/static/mdb.min.js"></script>
+<script type="text/javascript" src="/static/vue.js"></script>
+<script type="text/javascript" src="/static/bootbox.min.js"></script>
+<!-- CSS -->
+<link rel="stylesheet" href="/static/all.css" type="text/css">
+<link rel="stylesheet" href="/static/icofont.css" type="text/css">
+<link rel="stylesheet" href="/static/font-awesome.min.css" type="text/css">
+<link rel="stylesheet" href="/static/bootstrap.min.css" type="text/css">
+<link rel="stylesheet" href="/static/mdb.min.css" type="text/css">
+<link rel="stylesheet" href="/static/jquery.dataTables.min.css" type="text/css">
+
+<!-- Font Awesome -->
+<!-- Google Fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+
+<link href='https://fonts.googleapis.com/css?family=Rock+Salt' rel='stylesheet' type='text/css'>
+    <meta charset=utf-8 />
+    <title>Sistema Casa de Polo</title>
+  </head>
+        <style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+
+<link href='https://fonts.googleapis.com/css?family=Rock+Salt' rel='stylesheet' type='text/css'>
+    <meta charset=utf-8 />
+    <title>Sistema Casa de Polo Tarea</title>
+  </head>
+        
+
+<body>
+
+<style>
+    thead input {
+        width: 100%;
+    }
+</style>
+<header>
+  <nav class="navbar navbar-expand-sm ">
+      </ul>
+      <ul class="navbar-nav nav-flex-icons">
+     <li class="nav-item">
+        </li>
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="/registro">Despacho</a> </li>
+        <li class="nav-item"><a class="nav-link" href="/tareas">Tareas</a> </li>
+        <li class="nav-item"><a class="nav-link" href="#">Destajo</a>  </li>
+        <li class="nav-item"><a class="nav-link" href="#">Integrantes</a>  </li>
+        <li class="nav-item"><a class="nav-link" href="#">Record</a>  </li>
+        <li class="nav-item">
+          <a href="/logout" class="nav-link"><i class="icofont-logout"></i></a>
+        </li>
+      </ul>
+    </div>
+    
+</div>
+
+
+    </nav>
+</header>
+
+<div class="container my-4">
+  <div class="modal fade" id="modalSubscriptionForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold text-muted ms-5">Sistema de registro Tareas</h4>
+        
+      </div>
+      <div class="modal-body mx-6">
+         
+  <form  id="myform" method="POST" action="./tarea" >
+   <div class="md-for form-group  mx-sm-3 mb-2">      
+      <input  class="form-contro-md" type="text" placeholder="Tarea" name="tarea">
+      <input  class="form-contro-md" type="number" placeholder="Valor" name="valor">
+      <input  class="form-contro-md" type="number" placeholder="Duracion x min" name="duracion">
+      <input  class="form-contro-md" type="number" placeholder="Cantidad al dia" name="mininoDia">
+       <div class="md-form form-lg">
+          <input type="text" id="inputLGEx" name="detalle" class="form-control form-control-lg">
+          <label for="inputLGEx">Detalle</label>
+        </div>
+
+              
+      <div class="modal-footer d-flex justify-content-center">
+      <input type="submit"  class="btn btn-outline-success "  value="Guardar" onclick="handleForm()">
+      <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cerrar</button>
+        
+   </div>
+
+  </form>
+ 
+ </div>
+ </div>
+
+    </div>
+  </div>
+</div></div>
+
+<div class="text-center">
+  <a href="" class="btn btn-outline-blue btn-rounded mb-4" data-toggle="modal" data-target="#modalSubscriptionForm">Registrar Tarea <i class="icofont-ui-add"></i></a>
+</div>
+
+     
+
+
+<table id="example" class="display table border-dark  table-sm" cellspacing="0" width="100%">
+        <thead>
+            <tr class="">
+                
+                <th>Tarea</th>
+                <th>Valor</th>
+                <th>Duracion</th>
+                <th>Minimo al dia</th>
+                <th>Fecha</th>
+                <th>Detalle</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr class="p-3 mb-2 bg-light text-white">
+                
+                <th>Tarea</th>
+                <th>Valor</th>
+                <th>Duracion</th>
+                <th>Minimo al dia</th>
+                <th>Fecha</th>
+                <th>Detalle</th>
+            </tr>
+        </tfoot>
+
+         <tbody>
+            {%for i in tarea %} 
+            <tr>
+                <td>{{i.nom_tarea}}</td> 
+                <td>{{i.valor}}</td>
+                <td>{{i.duracion}}</td> 
+                <td>{{i.mininoDia}}</td> 
+                <td>{{i.fecha}}</td>
+                <td>{{i.detalle}}</td> 
+                
+            </tr>
+            {%endfor%} 
+        </tbody>
+    </table>
+
+
+
+
+        
+<script type="text/javascript">
+if ( window.history.replaceState ) {
+ window.history.replaceState( null, null, window.location.href );}
+     
+$(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    $('#example thead tr').clone(true).appendTo( '#example thead' );
+    $('#example thead tr:eq(1) th').each( function (i) {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="Buscar '+title+'" />' );
+ 
+        $( 'input', this ).on( 'keyup change', function () {
+            if ( table.column(i).search() !== this.value ) {
+                table
+                    .column(i)
+                    .search( this.value )
+                    .draw();
+            }
+        } );
+    } );
+ 
+    var table = $('#example').DataTable( {
+        orderCellsTop: true,
+        fixedHeader: true,
+
+        "language": {
+            "search":'<d class="font-weight-bold text-decoration-underline">Buscar: </d>',
+            "lengthMenu": " Mostrar _MENU_ registro por paguina",
+            'zeroRecords': '<div class="spinner-border text-success" role="status"><span class="sr-only">Loading...</span></div>',
+            "info": " Mostrar por pagina _PAGE_ of _PAGES_",
+            "infoEmpty": " Cargando datos disponible...",
+            "infoFiltered": "(filtrado de  _MAX_ regstro total)"
+        }});
+} );
+    </script>
+
+
+
+
+  </body>
+</html>

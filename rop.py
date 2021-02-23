@@ -88,8 +88,9 @@ class Tarea(db.Model):
     nom_tarea     = db.Column(db.String(56))
     fecha         = db.Column(db.DateTime)
     duracion      = db.Column(db.String(56))
-    precio        = db.Column(db.Integer)
+    valor         = db.Column(db.Integer)
     mininoDia     = db.Column(db.Integer)
+    detalle       = db.Column(db.String(56))
 
     def __repr__(self):
         return "<Title: {}>".format(self.nom_tarea)
@@ -282,6 +283,10 @@ def home():
     else:
         return redirect(url_for('registro'))#"Hello, Boss! <a href=\"/logout\"> Logout"
     return render_template('login.html')
+
+
+
+
 
 @app.route('/registro', methods=["GET", "POST"])
 def registro():
@@ -486,6 +491,41 @@ def logout():
     return home()
 
 
+
+@app.route("/tareas")
+def tareas():
+    if 1==5:#not session.get("logged_in"):
+        return render_template("login.html")
+    else:
+        tarea=Tarea.query.all()
+        return render_template("tarea.html",tarea =tarea)
+
+@app.route("/tarea", methods=["POST"])
+def tarea():
+    try:
+        
+        nom_tarea     = request.form.get("tarea").upper()
+        valor         = request.form.get("valor")
+        duracion      = request.form.get("duracion")
+        mininoDia     = request.form.get("mininoDia")
+        detalle       = request.form.get("detalle")
+
+        tarea = Tarea(fecha  =dt,
+            nom_tarea=nom_tarea,
+            valor      =valor      ,
+            duracion=duracion,
+            mininoDia=mininoDia,
+            detalle=detalle)        
+
+        if (str(nom_tarea))=="None" or (str(valor      ))=="None":pass
+        else:db.session.add(tarea),db.session.commit()
+    
+    except Exception as e:
+        flash('Error en la operacion no se pudo cargar...!')
+        print(e)
+    return redirect("/tareas")
+
+
 @app.route('/background_process')
 def background_process():
     if 1==5:#not session.get("logged_in"):
@@ -525,14 +565,17 @@ def background_process():
                                    id_talla      = id_talla)
                 if id_talla=="Seleccione Talla" or id_talla=="None" or can_terminada=="None" or can_terminada=="" or id_prenda=="None":pass
                 else:
+                    
                     db.session.add(prenda)
                     db.session.add(operacion)
                     db.session.commit()
+                    # trabajando DT.slep(4)
+
             except Exception as e:
                 flash('error en la operacion')
                 print(e)
     #datas = getData()['datas']
-    return jsonify(result='id_talla:'+str(id_talla)+' cantidad:'+str(can_terminada))
+    return jsonify(result='guardado..:')
 
 
 
