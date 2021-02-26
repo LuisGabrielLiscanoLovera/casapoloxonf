@@ -15,6 +15,7 @@ try:
     
 except Exception as e:print("Failed to import "+str(e))
 
+
 try:
     project_dir = os.path.dirname(os.path.abspath(__file__))
     database_file = "sqlite:///{}".format(os.path.join(project_dir, "polodb.db"))
@@ -24,8 +25,7 @@ try:
     app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=120)
     dt=DT.now()
     db = SQLAlchemy(app)
-except Exception as e:
-    print("Failed in values"+str(e))
+except Exception as e:print("Failed in values"+str(e))
 
 
 def gerar_token(tamanho):
@@ -55,7 +55,7 @@ class Integrnte(db.Model):
 class Prenda(db.Model):
     id_prenda   =db.Column(db.Integer,    unique=True, nullable=False, primary_key=True)
     op          =db.Column(db.String(16), unique=True, nullable=False)
-    referencia =db.Column(db.String(16))
+    referencia  =db.Column(db.String(16))
     fecha       =db.Column(db.DateTime)
     estado      =db.Column(db.String(9))
     id_color    =db.Column(db.Integer)
@@ -89,7 +89,7 @@ class Tarea(db.Model):
     fecha         = db.Column(db.DateTime)
     duracion      = db.Column(db.String(56))
     valor         = db.Column(db.Integer)
-    mininoDia     = db.Column(db.Integer)
+    min_hora      = db.Column(db.Integer)
     detalle       = db.Column(db.String(56))
 
     def __repr__(self):
@@ -108,8 +108,18 @@ class Talla(db.Model):
     nom_talla= db.Column(db.String(2))
     def __repr__(self):
         return "<Title: {}>".format(self.nom_talla)
-
 db.create_all()
+try:
+    db.engine.execute("insert into users values(1,'admin','ccidbcomputacion@gmail.com','admin','3117569482','1');")
+    db.engine.execute("insert into talla values(1,'S');")
+    db.engine.execute("insert into talla values(2,'M');")
+    db.engine.execute("insert into talla values(3,'L');")
+    db.engine.execute("insert into talla values(4,'XL');")
+    db.engine.execute("insert into talla values(5,'XXL');")
+    db.engine.execute("insert into talla values(6,'Punto');")
+except Exception as e:print("Failed in values"+str(e))
+
+
 
 def ct(id_prenda):
     operacion = db.engine.execute('select * from operacion where id_prenda ={};'.format(int(id_prenda)))
@@ -207,7 +217,7 @@ def signup():
 
 @app.route('/data',methods=["GET"])
 def getData():
-    if 1==5:#not session.get("logged_in"):
+    if 5==0:#not session.get("logged_in"):
         return render_template("login.html")
     else:
         prenda = Prenda.query.all()
@@ -278,7 +288,7 @@ def getData():
     return abuelo
 app.route('/')
 def home():
-    if 1==5:#not session.get("logged_in"):
+    if 5==0:#not session.get("logged_in"):
         return render_template("login.html")
     else:
         return redirect(url_for('registro'))#"Hello, Boss! <a href=\"/logout\"> Logout"
@@ -290,21 +300,11 @@ def home():
 
 @app.route('/registro', methods=["GET", "POST"])
 def registro():
-    if 1==5:#not session.get("logged_in"):
+    if 5==0:#not session.get("logged_in"):
         return render_template("login.html")
     else:#dt=str(dt[:-7])))
        
-        try:
-            
-            db.engine.execute("insert into users values(1,'admin','ccidbcomputacion@gmail.com','admin','3117569482','1');")
-            db.engine.execute("insert into talla values(1,'S');")
-            db.engine.execute("insert into talla values(2,'M');")
-            db.engine.execute("insert into talla values(3,'L');")
-            db.engine.execute("insert into talla values(4,'XL');")
-            db.engine.execute("insert into talla values(5,'XXL');")
-            db.engine.execute("insert into talla values(6,'Punto');")
-            
-        except Exception as e:pass
+        
 
         if request.form:
 
@@ -346,9 +346,9 @@ def registro():
                 estado=request.form.get("estado"),
                 fecha = dt)
 
-                if (str(request.form.get("op")))=="None" and (str(request.form.get("referencia")))=="None" and (str(request.form.get("color")))=="None" and (str(request.form.get("cant_total")))=="None" and (str(request.form.get("cant_tallaS")))=="None" and (str(request.form.get("cant_tallaM")))=="None" and (str(request.form.get("cant_tallaL")))=="None" and (str(request.form.get("cant_tallaXL")))=="None" and (str(request.form.get("cant_tallaXXL")))=="None" and (str(request.form.get("cant_nota")))=="None" and (str(request.form.get("estado")))=="None":
+                if (str(request.form.get("op")))==None and (str(request.form.get("referencia")))==None and (str(request.form.get("color")))==None and (str(request.form.get("cant_total")))==None and (str(request.form.get("cant_tallaS")))==None and (str(request.form.get("cant_tallaM")))==None and (str(request.form.get("cant_tallaL")))==None and (str(request.form.get("cant_tallaXL")))==None and (str(request.form.get("cant_tallaXXL")))==None and (str(request.form.get("cant_nota")))==None and (str(request.form.get("estado")))==None:
                     pass
-                if (str(request.form.get("op")))=="None" and (str(request.form.get("referencia")))=="None" and (str(request.form.get("color")))=="None" and (str(request.form.get("cant_total")))=="None":
+                if (str(request.form.get("op")))==None and (str(request.form.get("referencia")))==None and (str(request.form.get("color")))==None and (str(request.form.get("cant_total")))==None:
                     pass
                 else:
                     predOP=Prenda.query.filter_by(op=op).first()
@@ -366,7 +366,7 @@ def registro():
 
 @app.route('/operacion', methods=["POST"])
 def operacion():
-    if 1==5:#not session.get("logged_in"):
+    if 5==0:#not session.get("logged_in"):
         return render_template("login.html")
     else:
         if request.form:
@@ -404,7 +404,7 @@ def operacion():
                                    can_resta     = can_resta,
                                    id_talla      = request.form.get("id_talla"))        
 
-                if (str(request.form.get("can_terminada")))=="Seleccione Talla" or (str(request.form.get("can_terminada")))=="None" or (str(request.form.get("can_terminada")))=="" or (str(request.form.get("id_prenda")))=="None":pass
+                if (str(request.form.get("can_terminada")))=="Seleccione Talla" or (str(request.form.get("can_terminada")))==None or (str(request.form.get("can_terminada")))=="" or (str(request.form.get("id_prenda")))==None:pass
                 else:pass
                 db.session.add(prenda)
                 db.session.add(operacion)
@@ -467,24 +467,45 @@ def update():
 
 @app.route("/delete", methods=["POST"])
 def delete():
-    if 1==5:#not session.get("logged_in"):
+    if 5==0:#not session.get("logged_in"):
         flash('No se encuentra registrado')
         return render_template("login.html")
     else:
         try:
-            idpre = request.form.get("id_pren")
-            prenda = Prenda.query.filter_by(id_prenda=idpre).first()
-            db.engine.execute('delete from operacion where id_prenda ={};'.format(idpre))
-            db.engine.execute('delete from operacion where id_prenda ="";')
-
-            db.session.delete(prenda)
-            db.session.commit()
+            idtarea = request.form.get("id_tarea")
+            if idtarea == int:
+                db.engine.execute('delete from tarea where id_tarea ={};'.format(idtarea))
+                db.session.commit()
+                return redirect("/tarea")
+            else:
+                idpre = request.form.get("id_pren")
+                prenda = Prenda.query.filter_by(id_prenda=idpre).first()
+                db.engine.execute('delete from operacion where id_prenda ={};'.format(idpre))
+                db.engine.execute('delete from operacion where id_prenda ="";')
+                db.session.delete(prenda)
+                db.session.commit()
+                return redirect("/registro") 
         except Exception as e:
             flash('error en la operacion no se pudo borrar!')
             print(e)
 
     return redirect("/registro")
 
+@app.route("/deleteTarea", methods=["POST"])
+def deleteTarea():
+    if 5==0:#not session.get("logged_in"):
+        flash('No se encuentra registrado')
+        return render_template("login.html")
+    else:
+        try:
+            idtarea = request.form.get("id_tarea")
+            db.engine.execute('delete from tarea where id_tarea ={};'.format(idtarea))
+            db.session.commit()
+        except Exception as e:
+            flash('error en la operacion tarea no se pudo borrar!')
+            print(e)
+
+    return redirect("/tareas")
 @app.route("/logout")
 def logout():
     session['logged_in'] = False
@@ -494,11 +515,11 @@ def logout():
 
 @app.route("/tareas")
 def tareas():
-    if 1==5:#not session.get("logged_in"):
+    if 5==0:#not session.get("logged_in"):
         return render_template("login.html")
     else:
-        tarea=Tarea.query.all()
-        return render_template("tarea.html",tarea =tarea)
+        tareas=Tarea.query.all()
+        return render_template("tarea.html",tareas =tareas)
 
 @app.route("/tarea", methods=["POST"])
 def tarea():
@@ -507,17 +528,18 @@ def tarea():
         nom_tarea     = request.form.get("tarea").upper()
         valor         = request.form.get("valor")
         duracion      = request.form.get("duracion")
-        mininoDia     = request.form.get("mininoDia")
+        min_hora     = request.form.get("min_hora")
         detalle       = request.form.get("detalle")
+        print(nom_tarea,valor,duracion,min_hora)
 
         tarea = Tarea(fecha  =dt,
             nom_tarea=nom_tarea,
             valor      =valor      ,
             duracion=duracion,
-            mininoDia=mininoDia,
+            min_hora=min_hora,
             detalle=detalle)        
 
-        if (str(nom_tarea))=="None" or (str(valor      ))=="None":pass
+        if (str(nom_tarea))==None or (str(valor))==None or (str(duracion))==None or (str(nom_tarea))=='' or (str(valor))=='' or (str(duracion))=='':print("passsssssssssssssssssssssss")
         else:db.session.add(tarea),db.session.commit()
     
     except Exception as e:
@@ -528,7 +550,7 @@ def tarea():
 
 @app.route('/background_process')
 def background_process():
-    if 1==5:#not session.get("logged_in"):
+    if 5==0:#not session.get("logged_in"):
         return render_template("login.html")
     else:
         if request.args:
@@ -563,7 +585,7 @@ def background_process():
                                    can_terminada = can_terminada,
                                    can_resta     = can_resta,
                                    id_talla      = id_talla)
-                if id_talla=="Seleccione Talla" or id_talla=="None" or can_terminada=="None" or can_terminada=="" or id_prenda=="None":pass
+                if id_talla=="Seleccione Talla" or id_talla==None or can_terminada==None or can_terminada=="" or id_prenda==None:pass
                 else:
                     
                     db.session.add(prenda)
@@ -643,7 +665,6 @@ def getDataFaltante(id_prenda):
         #db.session.commit()
         estado='Abierto'
         fec=''
-    print(fec)
     return jsonify(megaRS=str(rS),
         megaRM=str(rM),
         megaRL=str(rL),

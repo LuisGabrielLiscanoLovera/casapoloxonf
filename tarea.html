@@ -58,7 +58,16 @@
         </li>
       </ul>
     </div>
+    <div class="row">
     
+    
+    <div class="col-sm-12">
+
+    </div>
+
+<div>
+
+
 </div>
 
 
@@ -80,8 +89,8 @@
    <div class="md-for form-group  mx-sm-3 mb-2">      
       <input  class="form-contro-md" type="text" placeholder="Tarea" name="tarea">
       <input  class="form-contro-md" type="number" placeholder="Valor" name="valor">
-      <input  class="form-contro-md" type="number" placeholder="Duracion x min" name="duracion">
-      <input  class="form-contro-md" type="number" placeholder="Cantidad al dia" name="mininoDia">
+      <input  class="form-contro-md" type="number" placeholder="Duracion por min" name="duracion">
+      <input  class="form-contro-md" type="number" placeholder="Cantidad por hora" name="min_hora">
        <div class="md-form form-lg">
           <input type="text" id="inputLGEx" name="detalle" class="form-control form-control-lg">
           <label for="inputLGEx">Detalle</label>
@@ -101,25 +110,25 @@
 
     </div>
   </div>
-</div></div>
+</div>
+</div>
+
 
 <div class="text-center">
   <a href="" class="btn btn-outline-blue btn-rounded mb-4" data-toggle="modal" data-target="#modalSubscriptionForm">Registrar Tarea <i class="icofont-ui-add"></i></a>
 </div>
 
-     
-
-
 <table id="example" class="display table border-dark  table-sm" cellspacing="0" width="100%">
         <thead>
-            <tr class="">
+            <tr >
                 
                 <th>Tarea</th>
                 <th>Valor</th>
                 <th>Duracion</th>
-                <th>Minimo al dia</th>
+                <th>Minimo por hora</th>
                 <th>Fecha</th>
-                <th>Detalle</th>
+                <th hidden >Detalle</th>
+                <th><center><h6 hidden class="modal-title w-100 font-weight-bold text-decoration-underline">Accion</h6></center></th>
             </tr>
         </thead>
         <tfoot>
@@ -128,21 +137,33 @@
                 <th>Tarea</th>
                 <th>Valor</th>
                 <th>Duracion</th>
-                <th>Minimo al dia</th>
+                <th>Minimo por hora</th>
                 <th>Fecha</th>
-                <th>Detalle</th>
+                <th hidden>Detalle</th>
+                <th ></th>
             </tr>
         </tfoot>
 
          <tbody>
-            {%for i in tarea %} 
+            {%for i in tareas%} 
             <tr>
                 <td>{{i.nom_tarea}}</td> 
                 <td>{{i.valor}}</td>
-                <td>{{i.duracion}}</td> 
-                <td>{{i.mininoDia}}</td> 
+                <td>{{i.duracion}} min</td> 
+                <td>{{i.min_hora}}</td> 
                 <td>{{i.fecha}}</td>
-                <td>{{i.detalle}}</td> 
+                <td>
+            <center>                  
+                <form method="POST" action="./deleteTarea" style="display: inline"  >
+                <input hidden value="{{i.id_tarea}}" name="id_tarea">
+                <input value="borrar " type="button" onClick="confSubmit(this.form);"class="btn-sm btn btn-outline-danger btn-rounded mb-2" >
+                </div>
+
+                </form>
+            </center>
+
+                </td>
+                <td hidden>{{i.detalle}}</td> 
                 
             </tr>
             {%endfor%} 
@@ -150,10 +171,18 @@
     </table>
 
 
-
-
         
 <script type="text/javascript">
+
+function confSubmit(form) {
+if (confirm("Estas segura que desea elimirar todo el registro!")) {
+form.submit();
+}
+
+else {
+alert("Los datos no se eliminaron!");
+}
+}
 if ( window.history.replaceState ) {
  window.history.replaceState( null, null, window.location.href );}
      
@@ -162,7 +191,11 @@ $(document).ready(function() {
     $('#example thead tr').clone(true).appendTo( '#example thead' );
     $('#example thead tr:eq(1) th').each( function (i) {
         var title = $(this).text();
-        $(this).html( '<input type="text" placeholder="Buscar '+title+'" />' );
+        if(title != null && title != '' && title != 'Accion') {
+
+   // do something
+if (title != 'Accion'){
+   $(this).html( '<input type="text" placeholder="Buscar '+title+'" />' );
  
         $( 'input', this ).on( 'keyup change', function () {
             if ( table.column(i).search() !== this.value ) {
@@ -172,7 +205,8 @@ $(document).ready(function() {
                     .draw();
             }
         } );
-    } );
+
+    }}} );
  
     var table = $('#example').DataTable( {
         orderCellsTop: true,
