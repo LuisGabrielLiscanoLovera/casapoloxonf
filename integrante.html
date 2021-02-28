@@ -80,21 +80,24 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold text-muted ms-5">Sistema de registro Tareas</h4>
+        <h4 class="modal-title w-100 font-weight-bold text-muted ms-5">Registro de Integrante</h4>
         
       </div>
       <div class="modal-body mx-6">
          
-  <form  id="myform" method="POST" action="./tarea" >
+  <form  id="myform" method="POST" action="./integrante" >
    <div class="md-for form-group  mx-sm-3 mb-2">      
-      <input  class="form-contro-md" type="text" placeholder="Tarea" name="tarea">
-      <input  class="form-contro-md" type="number" placeholder="Valor" name="valor">
-      <input  class="form-contro-md" type="number" placeholder="Duracion por min" name="duracion">
-      <input  class="form-contro-md" type="number" placeholder="Cantidad por hora" name="min_hora">
-       <div class="md-form form-lg">
-          <input type="text" id="inputLGEx" name="detalle" class="form-control form-control-lg">
-          <label for="inputLGEx">Detalle</label>
-        </div>
+      <input  class="form-control-sm" type="text" placeholder="Nombres " name="nombres">
+      <input  class="form-control-sm" type="text" placeholder="Apellidos" name="apellidos">
+      <select class="form-control-sm custom-select" name="sexo"><option selected>Seleccione sexo</option>
+       <option value="M">M</option><option value="F">F</option></select>
+      <input  class="form-control-sm" type="text" placeholder="Cedula" name="cedula">
+      <input  class="form-control-sm" type="text" placeholder="Correo" name="email">
+      <input  class="form-control-md" type="text" placeholder="telefono" name="num_contacto">
+      <div class="md-form form-lg">
+          <input type="text" id="inputLGEx" name="direccion" class="form-control form-control-lg">
+          <label for="inputLGEx">Direccion</label>
+      </div>
 
               
       <div class="modal-footer d-flex justify-content-center">
@@ -115,47 +118,62 @@
 
 
 <div class="text-center">
-  <a href="" class="btn btn-outline-blue btn-rounded mb-4" data-toggle="modal" data-target="#modalSubscriptionForm">Registrar Tarea <i class="icofont-ui-add"></i></a>
+  <a href="" class="btn btn-outline-blue btn-rounded mb-4" data-toggle="modal" data-target="#modalSubscriptionForm">Registrar Integrante <i class="icofont-ui-add"></i></a>
 </div>
+
+
+
+
+
+
+
+
+
 
 <table id="example" class="display table border-dark  table-sm" cellspacing="0" width="100%">
         <thead>
             <tr >
                 
-                <th>Tarea</th>
-                <th>Valor</th>
-                <th>Duracion</th>
-                <th>Minimo por hora</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Cedula</th>
+                <th>Sexo</th>
+                <th>Telefono</th>
+                <th>Correo</th>
                 <th>Fecha</th>
-                <th hidden >Detalle</th>
+                <th hidden >Direccion</th>
                 <th><center><h6 hidden class="modal-title w-100 font-weight-bold text-decoration-underline">Accion</h6></center></th>
             </tr>
         </thead>
         <tfoot>
             <tr class="p-3 mb-2 bg-light text-white">
                 
-                <th>Tarea</th>
-                <th>Valor</th>
-                <th>Duracion</th>
-                <th>Minimo por hora</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Cedula</th>
+                <th>Sexo</th>
+                <th>Telefono</th>
+                <th>Correo</th>
                 <th>Fecha</th>
-                <th hidden>Detalle</th>
+                <th hidden >Direccion</th>
                 <th ></th>
             </tr>
         </tfoot>
 
          <tbody>
-            {%for i in tareas%} 
+            {%for i in integrante%} 
             <tr>
-                <td>{{i.nom_tarea}}</td> 
-                <td>{{i.valor}}</td>
-                <td>{{i.duracion}} min</td> 
-                <td>{{i.min_hora}}</td> 
+                <td>{{i.nombres}}</td> 
+                <td>{{i.apellidos}}</td>
+                <td>{{i.cedula}}</td> 
+                <td>{{i.sexo}}</td> 
+                <td>{{i.num_contacto}}</td>
+                <td>{{i.email}}</td>
                 <td>{{i.fecha}}</td>
                 <td>
             <center>                  
-                <form method="POST" action="./deleteTarea" style="display: inline"  >
-                <input hidden value="{{i.id_tarea}}" name="id_tarea">
+                <form method="POST" action="./deleteIntegrante" style="display: inline"  >
+                <input hidden value="{{i.id_integrante}}" name="id_integrante">
                 <input value="borrar " type="button" onClick="confSubmit(this.form);"class="btn-sm btn btn-outline-danger btn-rounded mb-2" >
                 </div>
 
@@ -222,6 +240,9 @@ if (title != 'Accion'){
         }});
 } );
     </script>
+
+
+
 
 
 

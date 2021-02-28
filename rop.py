@@ -39,17 +39,20 @@ class Users(db.Model):
     username        =db.Column(db.String(56),nullable=False)
     email           =db.Column(db.String(56),nullable=False)
     password        =db.Column(db.String(56),nullable=False)
-    contact         =db.Column(db.String(56),nullable=False)
+    num_contacto    =db.Column(db.String(56),nullable=False)
     id_role         =db.Column(db.String(56))
 
-class Integrnte(db.Model):
-    id_integrante      =db.Column(db.Integer,   unique=True, nullable=False, primary_key=True)
-    nom_integrante     =db.Column(db.String(56),nullable=False)
+class Integrante(db.Model):
+    id_integrante      =db.Column(db.Integer,    unique=True, nullable=False, primary_key=True)
+    nombres            =db.Column(db.String(15),nullable=False)
+    apellidos          =db.Column(db.String(15),nullable=False)
+    sexo               =db.Column(db.String(1),nullable=False)
     email              =db.Column(db.String(56))
     cedula             =db.Column(db.String(56))
-    contact            =db.Column(db.String(56))
+    num_contacto       =db.Column(db.String(56))
     fecha              =db.Column(db.String(56))
-    direcion           =db.Column(db.String(56))
+    sexo               =db.Column(db.String(1))
+    direccion           =db.Column(db.String(56))
     foto               =db.Column(db.String(56))
 
 class Prenda(db.Model):
@@ -304,8 +307,6 @@ def registro():
         return render_template("login.html")
     else:#dt=str(dt[:-7])))
        
-        
-
         if request.form:
 
             try:
@@ -512,7 +513,6 @@ def logout():
     return home()
 
 
-
 @app.route("/tareas")
 def tareas():
     if 5==0:#not session.get("logged_in"):
@@ -528,7 +528,7 @@ def tarea():
         nom_tarea     = request.form.get("tarea").upper()
         valor         = request.form.get("valor")
         duracion      = request.form.get("duracion")
-        min_hora     = request.form.get("min_hora")
+        min_hora      = request.form.get("min_hora")
         detalle       = request.form.get("detalle")
         print(nom_tarea,valor,duracion,min_hora)
 
@@ -546,6 +546,55 @@ def tarea():
         flash('Error en la operacion no se pudo cargar...!')
         print(e)
     return redirect("/tareas")
+
+
+
+
+@app.route("/integrantes")
+def integrantes():
+    integrante=''
+    integrante=Integrante.query.all()
+    if 5==0:#not session.get("logged_in"):
+        return render_template("login.html")
+    else:
+       # integrante=integrante.query.all()
+        return render_template("integrante.html",integrante=integrante)#,integrante =integrante)
+
+
+@app.route("/integrante", methods=["POST"])
+def integrante():
+    try:
+        
+        nombres       = request.form.get("nombres").upper()
+        apellidos     = request.form.get("apellidos").upper()
+        sexo          = request.form.get("sexo")
+        email         = request.form.get("email")
+        cedula        = request.form.get("cedula")
+        num_contacto  = request.form.get("num_contacto")
+        direccion     = request.form.get("direccion")
+
+        print(nombres,apellidos,sexo,email,num_contacto)
+
+        integrante = Integrante(fecha  = dt,
+            nombres      = nombres,
+            apellidos    = apellidos,
+            sexo         = sexo,
+            email        = email,
+            cedula       = cedula,
+            num_contacto = num_contacto,
+            direccion    = direccion)        
+
+        if (str(nombres))==None or (str(apellidos))==None or (str(sexo))==None or (str(cedula))=='' or (str(nombres))=='' or (str(apellidos))=='':pass
+        else:db.session.add(integrante),db.session.commit()
+    
+    except Exception as e:
+        flash('Error en la operacion no se pudo cargar...!')
+        print(e)
+    return redirect("/integrantes")
+
+
+
+
 
 
 @app.route('/background_process')
